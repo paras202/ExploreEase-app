@@ -13,7 +13,7 @@ export default async function Home() {
     <div className="h-screen flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-500">
       <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
-          Welcome, {user?.username || "Guest"}!
+        Hi ,{user?.username || "Guest"}!
         </h1>
 
         {/* Display user image if available */}
