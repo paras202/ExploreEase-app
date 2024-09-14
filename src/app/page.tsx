@@ -1,70 +1,80 @@
+"use client";
+
+import React, { useState } from 'react';
 import Image from "next/image";
-import { auth, currentUser } from '@clerk/nextjs/server';
-import { SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import { useUser, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
 import Sidebar from "./components/Sidebar";
-export default async function Home() {
-  const { userId } = auth(); // Get the user ID if logged in
-  const user = await currentUser(); // Fetch user details if logged in
+
+export default function Home() {
+  const { isLoaded, isSignedIn, user } = useUser();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
-      {/* If user is signed in */}
       <SignedIn>
-        <Sidebar />
-        <div className="h-screen flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-500">
-          <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
-            <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
-              Hi, {user?.username || "Guest"}!
-            </h1>
-
-            {/* Display user image if available */}
-            {user?.imageUrl ? (
-              <div className="flex justify-center mb-6">
-                <Image
-                  src={user.imageUrl}
-                  alt="User Avatar"
-                  className="rounded-full"
-                  width={120}
-                  height={120}
-                />
-              </div>
-            ) : (
-              <div className="flex justify-center mb-6">
-                <div className="bg-gray-300 rounded-full w-28 h-28 flex items-center justify-center">
-                  <span className="text-gray-700">No Image</span>
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} user={user} />
+        <div className="min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 relative">
+          {/* Sidebar Toggle Button */}
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="fixed top-1/2 left-0 transform -translate-y-1/2 bg-white w-1 h-16 rounded-r-md focus:outline-none hover:w-2 transition-all duration-300 z-50"
+            aria-label="Toggle Sidebar"
+          />
+          
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full m-4">
+              <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
+                Hi, {user?.username || "Guest"}!
+              </h1>
+              
+              {user?.imageUrl ? (
+                <div className="flex justify-center mb-6">
+                  <Image
+                    src={user.imageUrl}
+                    alt="User Avatar"
+                    className="rounded-full"
+                    width={120}
+                    height={120}
+                  />
                 </div>
+              ) : (
+                <div className="flex justify-center mb-6">
+                  <div className="bg-gray-300 rounded-full w-28 h-28 flex items-center justify-center">
+                    <span className="text-gray-700">No Image</span>
+                  </div>
+                </div>
+              )}
+              
+              <div className="text-left space-y-4">
+                <p className="text-lg">
+                  <span className="font-semibold">Username: </span>{user?.username || "N/A"}
+                </p>
+                <p className="text-lg">
+                  <span className="font-semibold">Email: </span>{user?.primaryEmailAddress?.emailAddress || "N/A"}
+                </p>
+                <p className="text-lg">
+                  <span className="font-semibold">Phone: </span>{user?.phoneNumbers?.[0]?.phoneNumber || "N/A"}
+                </p>
+                <p className="text-lg">
+                  <span className="font-semibold">Account Verified: </span>
+                  {user?.emailAddresses?.[0]?.verification?.status === 'verified' ? "Yes" : "No"}
+                </p>
               </div>
-            )}
-
-            {/* Key User Info */}
-            <div className="text-left space-y-4">
-              <p className="text-lg">
-                <span className="font-semibold">Username: </span>{user?.username || "N/A"}
-              </p>
-              <p className="text-lg">
-                <span className="font-semibold">Email: </span>{user?.primaryEmailAddress?.emailAddress || "N/A"}
-              </p>
-              <p className="text-lg">
-                <span className="font-semibold">Phone: </span>{user?.phoneNumbers?.[0]?.phoneNumber || "N/A"}
-              </p>
-              <p className="text-lg">
-                <span className="font-semibold">Account Verified: </span>
-                {user?.emailAddresses?.[0]?.verification?.status === 'verified' ? "Yes" : "No"}
+              
+              <div className="border-t-2 border-gray-200 my-6"></div>
+              
+              <p className="text-center text-gray-600 text-sm">
+                Thank you for visiting!
               </p>
             </div>
-
-            {/* Beautiful Divider */}
-            <div className="border-t-2 border-gray-200 my-6"></div>
-
-            {/* Footer */}
-            <p className="text-center text-gray-600 text-sm">
-              Thank you for visiting!
-            </p>
           </div>
         </div>
       </SignedIn>
-
-      {/* If user is signed out */}
+      
       <SignedOut>
         <div className="h-screen flex items-center justify-center bg-gradient-to-r from-green-400 to-blue-500">
           <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
