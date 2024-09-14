@@ -14,8 +14,8 @@ export default function Navbar() {
   return (
     <FlowbiteNavbar fluid={true} rounded={true} className="border-b-2 border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
       <FlowbiteNavbar.Brand>
-        <Link href="/" className="flex items-center space-x-2 text-sm sm:text-xl font-semibold dark:text-white">
-           <span className="px-2 py-1 text-base bg-gradient-to-r from-green-300 via-purple-400 to-blue-500 rounded-lg text-white flex items-center">
+        <Link href="/" className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white">
+           <span className="px-2 py-1 gap-1 text-base bg-gradient-to-r from-green-300 via-purple-400 to-blue-500 rounded-lg text-white flex items-center">
            <CiAirportSign1 className="ml-2" color="darkblue"/> {/* Adjust spacing with `ml-2` if needed */}
            ExploreEase
            </span>
