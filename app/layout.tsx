@@ -1,12 +1,15 @@
 // app/layout.tsx
 
 import "./globals.css";
-import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  ClerkProvider,
+} from "@clerk/nextjs";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider } from "@/components/Theme-Provider";
+import SidebarWrapper from "@/components/SidebarWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,16 +23,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-      <ThemeProvider attribute="class" defaultTheme="light">
+      <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
-          
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >  
+            <Navbar />
+            <SidebarWrapper/>
+            <main>{children}</main>
+            <Footer />
+          </ThemeProvider>
         </body>
-        </ThemeProvider>
-
       </html>
     </ClerkProvider>
   );

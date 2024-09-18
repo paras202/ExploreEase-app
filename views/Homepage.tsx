@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import Image from "next/image";
 import { useUser, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
-import Sidebar from "../components/Sidebar";
 
 export default function Homepage() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -13,13 +12,11 @@ export default function Homepage() {
     return <div>Loading...</div>;
   }
   
-  const toggleSidebar = () => setIsSidebarOpen(prevState => !prevState);
 
   return (
     <>
        <SignedIn>
-        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} user={user} />
-        <div className={`min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 relative ${isSidebarOpen ? 'ml-64' : ''}`}>
+        <div className={`min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 relative `}>
           {/* Sidebar Toggle Button */}
      
           <div className="flex items-center justify-center min-h-screen">

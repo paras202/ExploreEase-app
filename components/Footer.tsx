@@ -6,7 +6,7 @@ import { BsFacebook, BsInstagram, BsTwitter, BsGithub, BsLinkedin } from 'react-
 
 export default function Footer() {
   return (
-    <footer className="border-t-8 border-green-400 bg-white text-gray-700">
+    <footer className="border-t-8 border-green-400 bg-white text-gray-700 dark:bg-gray-500 dark:text-white">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">

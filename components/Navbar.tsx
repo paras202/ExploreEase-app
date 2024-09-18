@@ -47,9 +47,6 @@ export default function Navbar() {
           {theme === "dark" ? <FaSun className="text-xl" /> : <FaMoon className="text-xl" />}
         </Button>
 
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
         <SignedOut>
           <SignInButton>
             <Button gradientDuoTone="purpleToBlue" outline pill>
