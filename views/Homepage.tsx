@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import Image from "next/image";
 import { useUser, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
-import Sidebar from "./components/Sidebar";
+import Sidebar from "../components/Sidebar";
 
-export default function Home() {
+export default function Homepage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 

@@ -1,9 +1,9 @@
 // app/layout.tsx
 
-import "../globals.css";
+import "./globals.css";
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from 'next-themes';
@@ -21,13 +21,15 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+      <ThemeProvider attribute="class" defaultTheme="light">
         <body className={inter.className}>
-          <ThemeProvider attribute="class" defaultTheme="light">
+          
           <Navbar />
           <main>{children}</main>
           <Footer />
-          </ThemeProvider>
         </body>
+        </ThemeProvider>
+
       </html>
     </ClerkProvider>
   );
