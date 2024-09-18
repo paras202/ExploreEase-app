@@ -8,6 +8,8 @@ import {
   SignedOut,
   UserButton
 } from '@clerk/nextjs'
+import Navbar from "@/components/Navbar";
+import { ThemeProvider } from "@/components/Theme-Provider"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +27,13 @@ export default function RootLayout({
     <ClerkProvider>
     <html lang="en">
       <body>
+       <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+        <Navbar/>
         <SignedOut>
           <SignInButton />
         </SignedOut>
@@ -32,6 +41,7 @@ export default function RootLayout({
           <UserButton />
         </SignedIn>
         {children}
+        </ThemeProvider>
       </body>
     </html>
   </ClerkProvider>

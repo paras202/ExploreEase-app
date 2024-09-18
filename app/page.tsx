@@ -11,7 +11,7 @@ export default async function Home() {
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-500">
-      <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full">
+      <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full dark:bg-slate-700">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
           Welcome, {user?.username || "Guest"}!
         </h1>
@@ -36,7 +36,7 @@ export default async function Home() {
         )}
 
         {/* Key User Info */}
-        <div className="text-left space-y-4">
+        <div className="text-left space-y-4 ">
           <p className="text-lg">
             <span className="font-semibold">Username: </span>{user?.username || "N/A"}
           </p>
