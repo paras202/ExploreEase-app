@@ -12,19 +12,16 @@ export default function Home() {
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
+  
+  const toggleSidebar = () => setIsSidebarOpen(prevState => !prevState);
 
   return (
     <>
-      <SignedIn>
-        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} user={user} />
-        <div className="min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 relative">
+       <SignedIn>
+        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} user={user} />
+        <div className={`min-h-screen bg-gradient-to-r from-purple-500 to-indigo-500 relative ${isSidebarOpen ? 'ml-64' : ''}`}>
           {/* Sidebar Toggle Button */}
-          <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="fixed top-1/2 left-0 transform -translate-y-1/2 bg-white w-1 h-16 rounded-r-md focus:outline-none hover:w-2 transition-all duration-300 z-50"
-            aria-label="Toggle Sidebar"
-          />
-          
+     
           <div className="flex items-center justify-center min-h-screen">
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full m-4">
               <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
