@@ -2,14 +2,16 @@
 
 import { Navbar as FlowbiteNavbar, TextInput, Button } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { FaMoon } from "react-icons/fa";
+import { FaMoon, FaSun  } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
 import { CiAirportSign1 } from "react-icons/ci";
+import { useTheme } from "next-themes";
 
 export default function Navbar() {
   const path = usePathname();
+  const { theme, setTheme } = useTheme();
 
   return (
     <FlowbiteNavbar fluid rounded className="border-b-2 border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
@@ -36,8 +38,13 @@ export default function Navbar() {
       </Button>
 
       <div className="flex gap-1 md:order-2">
-        <Button className="w-12 h-10 hidden sm:inline" color="gray">
-          <FaMoon className="text-xl" />
+        {/* Theme Toggle Button */}
+        <Button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="w-12 h-10 hidden sm:inline"
+          color="gray"
+        >
+          {theme === "dark" ? <FaSun className="text-xl" /> : <FaMoon className="text-xl" />}
         </Button>
 
         <SignedIn>

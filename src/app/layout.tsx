@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from 'next-themes';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,9 +22,11 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
+          <ThemeProvider attribute="class" defaultTheme="light">
           <Navbar />
           <main>{children}</main>
           <Footer />
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
