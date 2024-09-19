@@ -32,14 +32,14 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-gray-500">© {new Date().getFullYear()} ExploreEase. All rights reserved.</p>
+        <div className="mt-8 pt-8 border-t border-gray-500 dark:border-white flex flex-col md:flex-row justify-between items-center">
+          <p className="text-sm text-gray-500 dark:text-gray-200">© {new Date().getFullYear()} ExploreEase. All rights reserved.</p>
           <div className="flex space-x-4 mt-4 md:mt-0">
-            <a href="#" className="text-gray-400 hover:text-blue-500"><BsFacebook size={20} /></a>
-            <a href="#" className="text-gray-400 hover:text-pink-500"><BsInstagram size={20} /></a>
-            <a href="#" className="text-gray-400 hover:text-blue-400"><BsTwitter size={20} /></a>
-            <a href="#" className="text-gray-400 hover:text-gray-700"><BsGithub size={20} /></a>
-            <a href="#" className="text-gray-400 hover:text-blue-700"><BsLinkedin size={20} /></a>
+            <a href="#" className="text-gray-400  dark:text-gray-200 hover:text-blue-500"><BsFacebook size={20} /></a>
+            <a href="#" className="text-gray-400 dark:text-gray-200 hover:text-pink-500"><BsInstagram size={20} /></a>
+            <a href="#" className="text-gray-400 dark:text-gray-200 hover:text-blue-400"><BsTwitter size={20} /></a>
+            <a href="#" className="text-gray-400 dark:text-gray-200 hover:text-gray-700"><BsGithub size={20} /></a>
+            <a href="#" className="text-gray-400 dark:text-gray-200 hover:text-blue-700"><BsLinkedin size={20} /></a>
           </div>
         </div>
       </div>

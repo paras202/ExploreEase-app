@@ -6,6 +6,12 @@ import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
 
 export default function Homepage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const cities = [
+    { name: 'Paris', image: '/paris.jpg' },
+    { name: 'Tokyo', image: '/tokyo.jpg' },
+    { name: 'New York', image: '/newyork.jpg' },
+  ];
+
 
   return (
     <>
@@ -31,20 +37,20 @@ export default function Homepage() {
       {/* Featured Destinations */}
       <section className="py-16">
         <div className="container mx-auto px-6">
-          <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">Featured Destinations</h3>
+          <h3 className="text-3xl font-bold text-gray-800 mb-8">Featured Destinations</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {['Paris', 'Tokyo', 'New York'].map((city) => (
-              <div key={city} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+            {cities.map((city) => (
+              <div key={city.name} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <Image
-                  src={`/api/placeholder/800/500?text=${city}`}
-                  alt={`${city} skyline`}
+                  src={city.image}
+                  alt={`${city.name} skyline`}
                   width={800}
-                  height={500}
-                  className="w-full h-48 object-cover"
+                  height={800}
+                  className="w-full h-60 object-cover"
                 />
-                <div className="p-6">
-                  <h4 className="text-xl font-semibold mb-2 dark:text-gray-200">{city}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Experience the magic of {city} with our exclusive travel packages.</p>
+                <div className="p-2">
+                  <h4 className="text-xl font-semibold mb-2">{city.name}</h4>
+                  <p className="text-gray-600">Experience the magic of {city.name} with our exclusive travel packages.</p>
                 </div>
               </div>
             ))}
