@@ -21,3 +21,5 @@ export default function DashboardLayout({
     </div>
   );
 }
+
+export const dynamic = 'force-dynamic';
