@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-      domains: ['img.clerk.com'], // Add the external hostname here
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: '**.clerk.com',
+          port: '',
+          pathname: '/**',
+        }, 
+      ], // Add the external hostname here
     },
   };
   

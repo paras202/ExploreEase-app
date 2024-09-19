@@ -1,5 +1,5 @@
 // app/dashboard/layout.tsx
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/app/ui/Sidebar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

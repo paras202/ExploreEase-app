@@ -1,15 +1,15 @@
 // app/layout.tsx
 
-import "./globals.css";
+import "./ui/globals.css";
 import {
   ClerkProvider,
 } from "@clerk/nextjs";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import Navbar from "./ui/Navbar";
+import Footer from "./ui/Footer";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/Theme-Provider";
-import SidebarWrapper from "@/components/SidebarWrapper";
+import { ThemeProvider } from "@/app/ui/Theme-Provider";
+import SidebarWrapper from "@/app/ui/SidebarWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
