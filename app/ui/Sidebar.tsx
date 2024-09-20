@@ -54,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar, user })
             <li>
               <button onClick={() => openUserProfile()} className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <FaCog className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="ml-3">Settings</span>
+                <span className="ml-3">Account</span>
               </button>
             </li>
             <li>

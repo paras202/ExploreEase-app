@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/app/ui/Theme-Provider";
 import SidebarWrapper from "@/app/ui/SidebarWrapper";
+import MobileNavbar from "./ui/MobileNavbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
             <SidebarWrapper/>
             <main>{children}</main>
             <Footer />
+            <MobileNavbar/>
           </ThemeProvider>
         </body>
       </html>

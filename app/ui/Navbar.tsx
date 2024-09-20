@@ -33,18 +33,18 @@ export default function Navbar() {
         />
       </form>
 
-      <Button className="w-12 h-10 lg:hidden" color="gray">
+      {/* <Button className="w-12 h-10 lg:hidden" color="gray">
         <AiOutlineSearch className="text-xl" />
-      </Button>
+      </Button> */}
 
       <div className="flex gap-1 md:order-2">
         {/* Theme Toggle Button */}
         <Button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="w-12 h-10 hidden sm:inline"
+          className="w-10 gap-1 md:w-12 md:h-10 sm:inline"
           color="gray"
         >
-          {theme === "dark" ? <FaSun className="text-xl" /> : <FaMoon className="text-xl" />}
+          {theme === "dark" ? <FaSun className="md:text-xl" /> : <FaMoon className="md:text-xl" />}
         </Button>
 
         <SignedOut>
@@ -53,9 +53,12 @@ export default function Navbar() {
               Sign In
             </Button>
           </SignInButton>
-        </SignedOut>
-
-        <FlowbiteNavbar.Toggle />
+        </SignedOut >
+        <SignedIn>
+          <div className="flex justify-items-center">
+          <UserButton />
+          </div>
+        </SignedIn>
       </div>
 
       <FlowbiteNavbar.Collapse>
@@ -69,6 +72,7 @@ export default function Navbar() {
           Contact
         </FlowbiteNavbar.Link>
       </FlowbiteNavbar.Collapse>
+
     </FlowbiteNavbar>
   );
 }
