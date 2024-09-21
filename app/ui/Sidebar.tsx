@@ -1,11 +1,11 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useClerk } from '@clerk/nextjs';
-import { FaUser, FaCog, FaSignOutAlt, FaUserPlus } from 'react-icons/fa';
+import { FaUser, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { UserResource } from '@clerk/types';
+import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -15,6 +15,33 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar, user }) => {
   const { openUserProfile, signOut } = useClerk();
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Close sidebar when clicking outside of it
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node) && isSidebarOpen) {
+  //       toggleSidebar();
+  //     }
+  //   };
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [isSidebarOpen, toggleSidebar]);
+
+  // Function to handle navigation and close sidebar
+  const handleNavigation = (path: string) => {
+    router.push(path);
+    toggleSidebar();
+  };
+
+  // Function to handle sign out and close sidebar
+  const handleSignOut = async () => {
+    await signOut();
+    toggleSidebar();
+  };
 
   return (
     <>
@@ -29,6 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar, user })
 
       {/* Sidebar */}
       <div
+        ref={sidebarRef}
         className={`fixed top-0 left-0 h-full z-40 bg-white dark:bg-gray-800 shadow-lg transition-transform transform w-64 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
@@ -46,24 +74,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar, user })
           </div>
           <ul className="space-y-2">
             <li>
-              <Link href="/dashboard" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <button onClick={() => handleNavigation('/dashboard')} className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <FaUser className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="ml-3">Dashboard</span>
-              </Link>
+              </button>
             </li>
             <li>
-              <button onClick={() => openUserProfile()} className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <button onClick={() => { openUserProfile(); toggleSidebar(); }} className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <FaCog className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="ml-3">Account</span>
               </button>
             </li>
             <li>
-              <button onClick={() => signOut()} className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <button onClick={handleSignOut} className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <FaSignOutAlt className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="ml-3">Sign Out</span>
               </button>
             </li>
-
           </ul>
         </div>
       </div>

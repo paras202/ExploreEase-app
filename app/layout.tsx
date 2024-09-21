@@ -3,7 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/app/ui/Theme-Provider";
-
+import PageWrapper from "./ui/ClientSideWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,7 +24,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <PageWrapper>
             {children}
+            </PageWrapper>
           </ThemeProvider>
         </body>
       </html>
