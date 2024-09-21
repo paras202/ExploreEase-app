@@ -1,16 +1,8 @@
-// app/layout.tsx
-
 import "./ui/globals.css";
-import {
-  ClerkProvider,
-} from "@clerk/nextjs";
-import Navbar from "./ui/Navbar";
-import Footer from "./ui/Footer";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/app/ui/Theme-Provider";
-import SidebarWrapper from "@/app/ui/SidebarWrapper";
-import MobileNavbar from "./ui/MobileNavbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,18 +17,14 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
+        <body className={inter.className} suppressHydrationWarning>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-          >  
-            <Navbar />
-            <SidebarWrapper/>
-            <main>{children}</main>
-            <Footer />
-            <MobileNavbar/>
+          >
+            {children}
           </ThemeProvider>
         </body>
       </html>
