@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Map from './Map';
 import Image from "next/image";
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
 
@@ -18,7 +19,7 @@ export default function Homepage() {
     <SignedIn>
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Hero Section with Search Bar */}
-      <section className="bg-gradient-to-r from-purple-500 to-indigo-500 dark:from-purple-700 dark:to-indigo-900 text-white py-20">
+      <section className="bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800 text-white py-20">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-5xl font-bold dark:text-gray-200 mb-4">Discover Your Next Adventure</h2>
           <p className="text-xl text-gray-200 dark:text-gray-400 mb-8">Explore the worlds most exciting destinations with ExploreEase</p>
@@ -59,7 +60,7 @@ export default function Homepage() {
       </section>
 
       {/* Weather Conditions */}
-      <section className="py-16 bg-blue-50 dark:bg-blue-900">
+      <section className="py-16 bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800 ">
         <div className="container mx-auto px-6">
           <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">Weather Conditions</h3>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
@@ -72,23 +73,12 @@ export default function Homepage() {
       </section>
 
       {/* Map Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-6">
-          <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">Explore Destinations</h3>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-              This section would display an interactive map.
-              You could integrate with a mapping service like Google Maps or Mapbox.
-            </p>
-            <div className="w-full h-96 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-              <span className="text-gray-500 dark:text-gray-400">Map Placeholder</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="py-16 px-4 md:px-16 max-w-4/5 mx-auto bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800">
+  <Map />
+</section>
 
       {/* About Us */}
-      <section className="bg-gradient-to-r from-purple-500 to-indigo-500 dark:from-purple-700 dark:to-indigo-900 py-16">
+      <section className="bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800">
         <div className="container mx-auto px-6">
           <h3 className="text-3xl font-bold text-white dark:text-gray-200 mb-8">About ExploreEase</h3>
           <p className="text-lg text-gray-200 dark:text-gray-300 mb-6">
