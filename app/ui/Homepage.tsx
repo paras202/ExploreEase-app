@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Map from './Map';
 import Image from "next/image";
 import SearchBox from './SearchBox';
 
@@ -87,7 +88,7 @@ export default function Homepage() {
       </section>
 
       {/* About Us */}
-      <section className="bg-gradient-to-r from-purple-500 to-indigo-500 dark:from-purple-700 dark:to-indigo-900 py-16">
+      <section className="bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800">
         <div className="container mx-auto px-6">
           <h3 className="text-3xl font-bold text-white dark:text-gray-200 mb-8">About ExploreEase</h3>
           <p className="text-lg text-gray-200 dark:text-gray-300 mb-6">
