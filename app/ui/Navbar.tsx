@@ -8,6 +8,7 @@ import Link from "next/link";
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
 import { CiAirportSign1 } from "react-icons/ci";
 import { useTheme } from "next-themes";
+import { MdMyLocation } from "react-icons/md";
 
 export default function Navbar() {
   const path = usePathname();
@@ -36,6 +37,8 @@ export default function Navbar() {
       {/* <Button className="w-12 h-10 lg:hidden" color="gray">
         <AiOutlineSearch className="text-xl" />
       </Button> */}
+      <MdMyLocation className="text-xl text-purple-600 dark:text-white cursor-pointer hover:opacity-50"/>
+
 
       <div className="flex gap-1 md:order-2">
         {/* Theme Toggle Button */}
@@ -44,7 +47,7 @@ export default function Navbar() {
           className="w-10 gap-1 md:w-12 md:h-10 sm:inline"
           color="gray"
         >
-          {theme === "dark" ? <FaSun className="md:text-xl" /> : <FaMoon className="md:text-xl" />}
+          {theme === "dark" ? <FaSun className="md:text-xl" /> : <FaMoon className="md:text-xl text-purple-600" />}
         </Button>
 
         <SignedOut>
@@ -54,13 +57,13 @@ export default function Navbar() {
             </Button>
           </SignInButton>
         </SignedOut >
-        <SignedIn>
+        {/* <SignedIn>
           <div className="flex justify-items-center">
           <UserButton />
           </div>
-        </SignedIn>
+        </SignedIn> */}
       </div>
-
+ 
       <FlowbiteNavbar.Collapse>
         <FlowbiteNavbar.Link as={Link} href="/" active={path === "/"}>
           Home
