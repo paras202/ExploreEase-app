@@ -18,7 +18,7 @@ export default function Homepage() {
     <>
     <SignedIn>
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Hero Section with Search Bar */}
+      {/* Hero Section with Search  Bar */}
       <section className="bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800 text-white py-20">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-5xl font-bold dark:text-gray-200 mb-4">Discover Your Next Adventure</h2>
