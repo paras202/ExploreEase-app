@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Map from './Map';
+import Destinations from './Destinations';
 import Image from "next/image";
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
 
@@ -71,6 +72,11 @@ export default function Homepage() {
           </div>
         </div>
       </section>
+                
+       {/* Destination Component */}
+       <section className="py-16 px-4 md:px-16 max-w-4/5 mx-auto bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800">
+        <Destinations/> {/* Add the Destination component here */}
+      </section>
 
       {/* Map Section */}
       <section className="py-16 px-4 md:px-16 max-w-4/5 mx-auto bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800">
@@ -86,8 +92,8 @@ export default function Homepage() {
             activities, and accommodations to ensure your journey is nothing short of extraordinary.
           </p>
           <p className="text-lg text-gray-200 dark:text-gray-300">
-            With ExploreEase, you can discover hidden gems, immerse yourself in local cultures, and create
-            memories that will last a lifetime. Let us guide you to your next adventure!
+          ExploreEase is your gateway to unforgettable travel experiences. We curate the best destinations,
+          activities, and accommodations to ensure your journey is nothing short of extraordinary.
           </p>
         </div>
       </section>
