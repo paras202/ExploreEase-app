@@ -1,5 +1,3 @@
-'use client';
-
 import Homepage from "@/app/ui/Homepage";
 import MobileLandingPage from "@/app/ui/MobileLanding";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
