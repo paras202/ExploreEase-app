@@ -28,8 +28,12 @@ function ChangeView({ center, zoom }: ChangeViewProps) {
 }
 
 const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => { // Default to an empty array
-  const center: L.LatLngTuple = [30.7333, 76.7794]; // Default coordinates for Punjab
+  let center: L.LatLngTuple = [30.7333, 76.7794]; // Default coordinates for Punjab
   const zoom = 10;
+
+  if(places.length>0){
+    center=[places[0].latitude,places[0].longitude]
+  }
 
   return (
     <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
