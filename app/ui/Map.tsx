@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl, ScaleControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -27,21 +27,24 @@ function ChangeView({ center, zoom }: ChangeViewProps) {
   return null;
 }
 
-const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => { // Default to an empty array
-  let center: L.LatLngTuple = [30.7333, 76.7794]; // Default coordinates for Punjab
-  const zoom = 10;
+const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => {
+  const [center, setCenter] = useState<L.LatLngTuple>([30.7333, 76.7794]); // Default coordinates for Punjab
+  const [zoom, setZoom] = useState(10);
 
-  if(places.length>0){
-    center=[places[0].latitude,places[0].longitude]
-  }
+  useEffect(() => {
+    if (places.length > 0) {
+      setCenter([places[0].latitude, places[0].longitude]);
+    }
+  }, [places]);
 
   return (
     <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
       <MapContainer
         center={center}
         zoom={zoom}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true} // Enable scroll wheel zoom
         className="w-full h-full"
+        zoomControl={false} // Disable default zoom control
       >
         <ChangeView center={center} zoom={zoom} />
         <TileLayer
@@ -58,9 +61,46 @@ const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => { // Defa
             </Popup>
           </Marker>
         ))}
+        <ZoomControl position="topright" /> {/* Add zoom control */}
+        <ScaleControl position="bottomright" /> {/* Add scale control */}
+        <LocationFinder /> {/* Add custom control for finding user's location */}
       </MapContainer>
     </div>
   );
 }
+
+// Custom control for finding user's location
+const LocationFinder: React.FC = () => {
+  const map = useMap();
+
+  const handleLocationFound = (e: L.LocationEvent) => {
+    map.flyTo(e.latlng, map.getZoom());
+  };
+
+  const findLocation = () => {
+    map.locate({ setView: false });
+    map.on('locationfound', handleLocationFound);
+  };
+
+  return (
+    <div className="leaflet-top leaflet-left">
+      <div className="leaflet-control leaflet-bar">
+        <a
+          href="#"
+          title="Find my location"
+          role="button"
+          aria-label="Find my location"
+          onClick={(e) => {
+            e.preventDefault();
+            findLocation();
+          }}
+          className="leaflet-control-zoom-in"
+        >
+          📍
+        </a>
+      </div>
+    </div>
+  );
+};
 
 export default Map;
