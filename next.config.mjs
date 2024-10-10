@@ -1,16 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-      remotePatterns: [
-        {
-          protocol: 'https',
-          hostname: '**.clerk.com',
-          port: '',
-          pathname: '/**',
-        }, 
-      ], // Add the external hostname here
-    },
-  };
-  
-  export default nextConfig;
-  
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'media-cdn.tripadvisor.com', // Replace the domain entry with a remote pattern
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.clerk.com', // Add Clerk domain configuration here
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+};
+
+export default nextConfig;

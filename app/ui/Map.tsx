@@ -27,9 +27,26 @@ function ChangeView({ center, zoom }: ChangeViewProps) {
   return null;
 }
 
-const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => { // Default to an empty array
-  const center: L.LatLngTuple = [30.7333, 76.7794]; // Default coordinates for Punjab
+// Dummy data for tourist places in Chandigarh
+const dummyTouristPlaces: TouristPlace[] = [
+  { id: 1, name: "Rock Garden", position: [30.7512, 76.8065], description: "Unique rock sculptures and art pieces" },
+  { id: 2, name: "Sukhna Lake", position: [30.7421, 76.8181], description: "Artificial lake and popular recreational spot" },
+  { id: 3, name: "Rose Garden", position: [30.7531, 76.7867], description: "Large rose garden with over 1600 species" },
+  { id: 4, name: "Capitol Complex", position: [30.7595, 76.8074], description: "UNESCO World Heritage site designed by Le Corbusier" },
+  { id: 5, name: "Elante Mall", position: [30.7050, 76.8010], description: "Large shopping mall and entertainment complex" },
+];
+
+const Map: React.FC = () => {
+  const center: L.LatLngTuple = [30.7333, 76.7794]; // Chandigarh coordinates
   const zoom = 12;
+  const [touristPlaces, setTouristPlaces] = useState<TouristPlace[]>([]);
+
+  useEffect(() => {
+    // Simulating API call with setTimeout
+    setTimeout(() => {
+      setTouristPlaces(dummyTouristPlaces);
+    }, 1000);
+  }, []);
 
   return (
     <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
