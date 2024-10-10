@@ -83,13 +83,13 @@ export default function Navbar() {
         </div>
 
         <div className="flex gap-1 md:order-2">
-          <Button
+          {/* <Button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="w-10 gap-1 md:w-12 md:h-10 sm:inline"
             color="gray"
           >
             {theme === "dark" ? <FaSun className="md:text-xl" /> : <FaMoon className="md:text-xl text-purple-600" />}
-          </Button>
+          </Button> */}
           
           <SignedOut>
             <SignInButton>
@@ -98,6 +98,11 @@ export default function Navbar() {
               </Button>
             </SignInButton>
           </SignedOut>
+          <SignedIn>
+            <UserButton/>
+          </SignedIn>
+
+          <FlowbiteNavbar.Toggle/>
         </div>
         
         <FlowbiteNavbar.Collapse>
