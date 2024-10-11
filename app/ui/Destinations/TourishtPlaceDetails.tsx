@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import Map from '../Map';
+import Link from 'next/link';
 
 interface TouristPlace {
   id: number;
@@ -79,17 +80,32 @@ const TouristPlaceDetails = ({ id }: Props) => {
           objectFit="cover"
           className="transition-opacity duration-1000 ease-in-out opacity-70"
         />
-        <div className="absolute inset-0 bg-white opacity-50"></div>
+        <div className="absolute inset-0 bg-indigo-100 opacity-40"></div>
       </div>
 
       {/* Content */}
-      <div className="relative  w-full mx-auto p-6 min-h-screen flex flex-col justify-center items-center">
-        <div className="bg-transparent  p-8 rounded-lg shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105">
-          <h2 className="text-4xl font-bold mb-4 text-gray-800 animate-fadeIn">{place.name}</h2>
-          <p className="text-gray-700 mb-6 animate-slideUp">{place.description}</p>
-          
-          <div className="mb-6 animate-slideUp ">
-            <h3 className="text-2xl font-semibold text-gray-800">Address</h3>
+      <div className="relative  w-4/5 mx-auto p-6 min-h-screen flex flex-col justify-center items-center">
+        <div className="bg-transparent p-8 rounded-lg shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105">
+        <div className="flex flex-col items-center mb-8 animate-fadeIn">
+          <h2 className="text-4xl font-bold mb-8 text-gray-800 animate-fadeIn hover:text-indigo-600 transition-colors duration-300 hover:scale-105">{place.name}</h2>
+          <Link href={place.website} target='_blank'>
+          <div className="relative bg-center w-72 h-72 mb-6 rounded-full overflow-hidden border-4 shadow-lg">
+            <Image 
+              src={place.image || '/placeholder-image.jpg'} 
+              alt={place.name} 
+              layout="fill"
+              objectFit="cover"
+              className="transition-transform duration-300 ease-in-out hover:scale-110"
+            />
+          </div>
+          </Link>
+          </div>
+          <div className='mb-4 animate-slideUp bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white '>
+          <h3 className="text-2xl mb-3 font-semibold text-gray-800 animate-fadeIn hover:text-indigo-600 transition-colors duration-300">About</h3>
+          <p className="hover:font-semibold text-gray-700 mb-6 animate-slideUp hover:text-yellow-700">{place.description}</p>
+          </div>
+          <div className="mb-6 animate-slideUp bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white ">
+            <h3 className="text-2xl mb-3 font-semibold text-gray-800 animate-fadeIn hover:text-indigo-600 transition-colors duration-300">Address</h3>
             <p className="text-gray-700">{place.address}</p>
           </div>
           <div className="mb-6 h-64 w-full  animate-fadeIn">
@@ -98,23 +114,23 @@ const TouristPlaceDetails = ({ id }: Props) => {
           
 
           <div className="grid mt-64 grid-cols-1 md:grid-cols-2 gap-4 text-left animate-slideUp">
-            <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-gray-200">
+            <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white">
               <h3 className="text-lg font-semibold text-gray-800">Coordinates</h3>
               <p className="text-gray-700">
                 Latitude: {place.latitude.toFixed(4)}, Longitude: {place.longitude.toFixed(4)}
               </p>
             </div>
-            <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-gray-200">
+            <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white">
               <h3 className="text-lg font-semibold text-gray-800">Rating</h3>
               <p className="text-gray-700">
                 {place.rating} ({place.num_reviews} reviews)
               </p>
             </div>
-            <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-gray-200">
+            <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white">
               <h3 className="text-lg font-semibold text-gray-800">Ranking</h3>
               <p className="text-gray-700">{place.ranking}</p>
             </div>
-            <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-gray-200">
+            <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white">
               <h3 className="text-lg font-semibold text-gray-800">Website</h3>
               <a
                 href={place.website}
