@@ -10,4 +10,5 @@ export default function Page({ params }: { params: { id: string } }) {
       <TouristPlaceDetails id={id} />
     </div>
   );
+
 }

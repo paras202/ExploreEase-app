@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl, ScaleControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -63,11 +64,13 @@ const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => {
       .catch(error => console.error('Error fetching location name:', error));
   };
 
+
   return (
     <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
       <MapContainer
         center={center}
         zoom={zoom}
+
         scrollWheelZoom={true}
         className="w-full h-full"
         zoomControl={false}
