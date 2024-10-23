@@ -16,7 +16,7 @@ const options = (page: number) => ({
     offset: (page - 1) * 40
   },
   headers: {
-    'x-rapidapi-key': '319df93f51msh9f985a10eb1d352p159506jsn51224eb17868',
+    'x-rapidapi-key': '9b98074ad0msh1405a5056224606p179747jsn2f1674b5f1f1',
     'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
   }
 });

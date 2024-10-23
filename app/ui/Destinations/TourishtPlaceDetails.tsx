@@ -23,7 +23,7 @@ const API_URL = 'https://travel-advisor.p.rapidapi.com/attractions/get-details';
 const options = (id: string) => ({
   params: { location_id: id },
   headers: {
-    'x-rapidapi-key': 'a9d6b71bf0msha66dedcd030fe02p1162e9jsn4541dd5fd368',
+    'x-rapidapi-key': '9b98074ad0msh1405a5056224606p179747jsn2f1674b5f1f1',
     'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
   }
 });
