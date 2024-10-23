@@ -4,6 +4,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/app/ui/Theme-Provider";
 import PageWrapper from "./ui/ClientSideWrapper";
+import { TouristPlacesProvider } from "./ui/TouristPlaceContent";
+// import MobileLandingPage from "@/app/ui/MobileLanding";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,9 +27,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <PageWrapper>
-            {children}
-            </PageWrapper>
+            <TouristPlacesProvider>
+              <PageWrapper>
+                {children}
+              </PageWrapper>
+            </TouristPlacesProvider>
           </ThemeProvider>
         </body>
       </html>

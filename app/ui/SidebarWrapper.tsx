@@ -8,7 +8,7 @@ export default function SidebarWrapper() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
     const toggleSidebar = () => setIsSidebarOpen(prevState => !prevState);
