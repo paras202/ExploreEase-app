@@ -79,7 +79,7 @@ export default function Homepage() {
 
     try {
       const response = await axios.get('https://travel-advisor.p.rapidapi.com/locations/search', {
-        params: { query: searchQuery, limit: '30' },
+        params: { query: searchQuery, limit: '50' },
         headers: {
           'X-RapidAPI-Key': API_KEY,
           'X-RapidAPI-Host': 'travel-advisor.p.rapidapi.com'
