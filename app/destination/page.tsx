@@ -1,5 +1,5 @@
 "use client"
-import Destinations from '@/app/ui/Destinations'; // Assuming Destinations component is in the same directory
+import Destinations from '@/app/ui/Destinations/Destinations'; // Assuming Destinations component is in the same directory
 
 // // Dynamically import the Map component with SSR disabled
   import React from 'react';
@@ -32,7 +32,7 @@ const Map = dynamic(() => import('@/app/ui/Map'), {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
-          Explore Punjab's Tourist Attractions
+          Explore Tourist Attractions
         </h1>
         
         <div className="mb-8">

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 "use client"
+=======
+
+>>>>>>> 58203008a03f0f2b28d704f417584d672e1e7a45
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl, ScaleControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -63,12 +67,20 @@ const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => {
       })
       .catch(error => console.error('Error fetching location name:', error));
   };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58203008a03f0f2b28d704f417584d672e1e7a45
 
   return (
     <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
       <MapContainer
         center={center}
         zoom={zoom}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58203008a03f0f2b28d704f417584d672e1e7a45
         scrollWheelZoom={true}
         className="w-full h-full"
         zoomControl={false}

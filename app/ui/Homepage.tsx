@@ -7,7 +7,10 @@ import { CiSearch } from "react-icons/ci";
 import axios from 'axios';
 import Destination from './Destination';
 import { useTouristPlaces } from './TouristPlaceContent';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 58203008a03f0f2b28d704f417584d672e1e7a45
 
 // Dynamically import the Map component with SSR disabled
 const DynamicMap = dynamic(() => import('./Map'), {
@@ -80,7 +83,11 @@ export default function Homepage() {
 
     try {
       const response = await axios.get('https://travel-advisor.p.rapidapi.com/locations/search', {
+<<<<<<< HEAD
         params: { query: searchQuery, limit: '30' },
+=======
+        params: { query: searchQuery, limit: '50' },
+>>>>>>> 58203008a03f0f2b28d704f417584d672e1e7a45
         headers: {
           'X-RapidAPI-Key': API_KEY,
           'X-RapidAPI-Host': 'travel-advisor.p.rapidapi.com'
@@ -226,6 +233,7 @@ export default function Homepage() {
           </div>
         </div>
       </section>
+<<<<<<< HEAD
 
           {/* About Us */}
           <section className="py-16 bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800">
@@ -241,6 +249,30 @@ export default function Homepage() {
                   memories that will last a lifetime. Let us guide you to your next adventure!
                 </p>
               </div>
+=======
+                
+       {/* Destination Component */}
+       <section className="py-16 px-4 md:px-16 max-w-4/5 mx-auto bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800">
+        <Destinations/> {/* Add the Destination component here */}
+      </section>
+
+          {/* About Us Section */}
+          <section className="py-16 bg-gradient-to-r from-green-300 via-purple-400 to-blue-500 dark:from-green-700 dark:to-blue-800 relative z-20">
+            <div className="container mx-auto px-6">
+              <Link href="/about">
+                <h3 className="text-3xl font-bold text-purple-700 dark:text-gray-200 mb-8 cursor-pointer hover:text-indigo-500 transition duration-200">
+                  About ExploreEase
+                </h3>
+              </Link>
+              <p className="text-lg text-black dark:text-gray-300 mb-6">
+                ExploreEase is your gateway to unforgettable travel experiences. We curate the best destinations,
+                activities, and accommodations to ensure your journey is nothing short of extraordinary.
+              </p>
+              <p className="text-lg text-black dark:text-gray-300">
+                With ExploreEase, you can discover hidden gems, immerse yourself in local cultures, and create
+                memories that will last a lifetime. Let us guide you to your next adventure!
+              </p>
+>>>>>>> 58203008a03f0f2b28d704f417584d672e1e7a45
             </div>
           </section>
         </div>
