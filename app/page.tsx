@@ -4,15 +4,6 @@ import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { TouristPlacesProvider } from "@/app/ui/TouristPlaceContent";
 
 const Home = () => {
-  const [places, setPlaces] = useState([]);
-
-  useEffect(() =>{
-    getPlacesData()
-       .then((data)=>{
-          console.log(data);
-          setPlaces(data);
-       })
-  }, [])
   return (
     <TouristPlacesProvider>
       <SignedIn>
