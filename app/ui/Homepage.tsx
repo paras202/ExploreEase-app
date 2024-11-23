@@ -224,6 +224,11 @@ export default function Homepage() {
           </div>
         </div>
       </section>
+                
+       {/* Destination Component */}
+       <section className="py-16 px-4 md:px-16 max-w-4/5 mx-auto bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800">
+        <Destinations/> {/* Add the Destination component here */}
+      </section>
 
           {/* About Us Section */}
           <section className="py-16 bg-gradient-to-r from-green-300 via-purple-400 to-blue-500 dark:from-green-700 dark:to-blue-800 relative z-20">
