@@ -3,13 +3,42 @@ import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
+import { EventClickArg } from '@fullcalendar/core';
 import { Modal, Label, TextInput, Textarea, Button, Select } from 'flowbite-react';
 import { CalendarDays } from 'lucide-react';
 
-const TourismCalendar = () => {
-  // Dummy data for booked events
-  const [events, setEvents] = useState([
+interface TravelEvent {
+  id: string;
+  title: string;
+  start: string;
+  end?: string;
+  backgroundColor: string;
+  extendedProps: {
+    description: string;
+    status: 'planned' | 'booked';
+  };
+}
+
+interface NewEventForm {
+  title: string;
+  description: string;
+  status: 'planned' | 'booked';
+}
+
+interface TourismCalendarProps {
+  initialEvents?: TravelEvent[];
+  onEventAdd?: (event: TravelEvent) => void;
+  onEventClick?: (event: TravelEvent) => void;
+}
+
+const TourismCalendar: React.FC<TourismCalendarProps> = ({
+  initialEvents = [],
+  onEventAdd,
+  onEventClick
+}) => {
+  // Initial events state with proper typing
+  const [events, setEvents] = useState<TravelEvent[]>(initialEvents.length > 0 ? initialEvents : [
     {
       id: '1',
       title: 'Paris Trip',
@@ -44,35 +73,38 @@ const TourismCalendar = () => {
     }
   ]);
 
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [newEvent, setNewEvent] = useState({
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [newEvent, setNewEvent] = useState<NewEventForm>({
     title: '',
     description: '',
     status: 'planned'
   });
 
-  const handleDateClick = (arg) => {
+  const handleDateClick = (arg: DateClickArg): void => {
     setSelectedDate(arg.dateStr);
     setOpenModal(true);
   };
 
-  const handleEventClick = (arg) => {
+  const handleEventClick = (arg: EventClickArg): void => {
     const event = arg.event;
     setNewEvent({
       title: event.title,
       description: event.extendedProps.description,
-      status: event.extendedProps.status
+      status: event.extendedProps.status as 'planned' | 'booked'
     });
     setSelectedDate(event.startStr);
     setOpenModal(true);
+    onEventClick?.(event as unknown as TravelEvent);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (): void => {
+    if (!selectedDate) return;
+
     const eventId = Math.random().toString(36).substr(2, 9);
     const backgroundColor = newEvent.status === 'booked' ? '#22c55e' : '#f97316';
     
-    setEvents([...events, {
+    const newTravelEvent: TravelEvent = {
       id: eventId,
       title: newEvent.title,
       start: selectedDate,
@@ -81,8 +113,10 @@ const TourismCalendar = () => {
         description: newEvent.description,
         status: newEvent.status
       }
-    }]);
+    };
 
+    setEvents([...events, newTravelEvent]);
+    onEventAdd?.(newTravelEvent);
     setNewEvent({ title: '', description: '', status: 'planned' });
     setOpenModal(false);
   };
@@ -162,7 +196,7 @@ const TourismCalendar = () => {
               <Select
                 id="status"
                 value={newEvent.status}
-                onChange={(e) => setNewEvent({...newEvent, status: e.target.value})}
+                onChange={(e) => setNewEvent({...newEvent, status: e.target.value as 'planned' | 'booked'})}
                 required
               >
                 <option value="planned">Planned</option>
