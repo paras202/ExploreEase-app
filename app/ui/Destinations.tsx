@@ -124,7 +124,7 @@ const Destination: React.FC = () => {
       </div>
 
       <div className="mt-4 text-sm text-gray-600">
-        Discover the beauty of the world's top tourist attractions.
+        Discover the beauty of the worlds top tourist attractions.
       </div>
     </div>
   );

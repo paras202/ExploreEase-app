@@ -4,6 +4,8 @@ import Image from 'next/image';
 import axios from 'axios';
 import Map from '../Map';
 import Link from 'next/link';
+// import BookingModal from '../TouristBookingModel';
+import { Button } from 'flowbite-react'
 
 interface TouristPlace {
   id: number;
@@ -70,8 +72,8 @@ const TouristPlaceDetails = ({ id }: Props) => {
   if (!place) return <p className="text-center py-4">No data found</p>;
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Background Image */}
+    <div className="bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-600 dark:to-blue-700 relative min-h-screen overflow-hidden">
+      {/* Background Image
       <div className="absolute inset-0 z-0">
         <Image
           src={place.image || '/placeholder-image.jpg'}
@@ -79,17 +81,17 @@ const TouristPlaceDetails = ({ id }: Props) => {
           layout="fill"
           objectFit="cover"
           className="transition-opacity duration-1000 ease-in-out opacity-70"
-        />
-        <div className="absolute inset-0 bg-indigo-100 opacity-40"></div>
-      </div>
+        /> */}
+        {/* <div className="absolute inset-0 bg-indigo-100 opacity-40"></div> */}
+      {/* </div> */}
 
       {/* Content */}
-      <div className="relative  w-4/5 mx-auto p-6 min-h-screen flex flex-col justify-center items-center">
-        <div className="bg-transparent p-8 rounded-lg shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105">
+      <div className="relative  w-10/12 mx-auto pt-16 pb-16 min-h-screen flex flex-col justify-center items-center">
+        <div className="bg-gradient-to-r w-full from-green-300 to-blue-400 dark:from-green-600 dark:to-blue-700 p-16 rounded-lg shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105">
         <div className="flex flex-col items-center mb-8 animate-fadeIn">
           <h2 className="text-4xl font-bold mb-8 text-gray-800 animate-fadeIn hover:text-indigo-600 transition-colors duration-300 hover:scale-105">{place.name}</h2>
           <Link href={place.website} target='_blank'>
-          <div className="relative bg-center w-72 h-72 mb-6 rounded-full overflow-hidden border-4 shadow-lg">
+          <div className="relative bg-center w-96 h-96 mb-6 rounded-full overflow-hidden border-4 shadow-lg">
             <Image 
               src={place.image || '/placeholder-image.jpg'} 
               alt={place.name} 
@@ -104,16 +106,22 @@ const TouristPlaceDetails = ({ id }: Props) => {
           <h3 className="text-2xl mb-3 font-semibold text-gray-800 animate-fadeIn hover:text-indigo-600 transition-colors duration-300">About</h3>
           <p className="hover:font-semibold text-gray-700 mb-6 animate-slideUp hover:text-yellow-700">{place.description}</p>
           </div>
+          {/* <div className="flex justify-center mt-8">
+            <BookingModal 
+              placeName={place.name} 
+              placeId={place.id.toString()} 
+            />
+          </div> */}
           <div className="mb-6 animate-slideUp bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white ">
             <h3 className="text-2xl mb-3 font-semibold text-gray-800 animate-fadeIn hover:text-indigo-600 transition-colors duration-300">Address</h3>
             <p className="text-gray-700">{place.address}</p>
           </div>
-          <div className="mb-6 h-64 w-full  animate-fadeIn">
+          <div className="mb-8 h-64 w-full  animate-fadeIn">
             <Map places={[place]} />
           </div>
           
 
-          <div className="grid mt-64 grid-cols-1 md:grid-cols-2 gap-4 text-left animate-slideUp">
+          <div className="grid mt-64 grid-cols-1 md:grid-cols-2 gap-6 text-left animate-slideUp">
             <div className="bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white">
               <h3 className="text-lg font-semibold text-gray-800">Coordinates</h3>
               <p className="text-gray-700">
@@ -140,6 +148,11 @@ const TouristPlaceDetails = ({ id }: Props) => {
               >
                 Visit Website
               </a>
+            </div>
+            <div className="flex justify-center mt-8">
+             <Button gradientDuoTone="purpleToBlue">
+                Booking
+              </Button>
             </div>
           </div>
         </div>
