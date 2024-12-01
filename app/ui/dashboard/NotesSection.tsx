@@ -1,12 +1,12 @@
-// app/ui/dashboard/NotesSection.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button, Label, TextInput, Modal, Textarea } from 'flowbite-react';
 import { HiPlus, HiPencil, HiTrash } from 'react-icons/hi';
+import axios from 'axios';
 
 interface Note {
-  id: string;
+  id: number;
   title: string;
   content: string;
   createdAt: Date;
@@ -15,27 +15,99 @@ interface Note {
 export default function NotesSection() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<Note | null>(null);
   const [newNote, setNewNote] = useState({ title: '', content: '' });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCreateNote = () => {
-    if (newNote.title && newNote.content) {
-      setNotes([
-        ...notes,
-        {
-          id: Date.now().toString(),
-          title: newNote.title,
-          content: newNote.content,
-          createdAt: new Date(),
-        },
-      ]);
-      setNewNote({ title: '', content: '' });
-      setOpenModal(false);
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const fetchNotes = async () => {
+    try {
+      const response = await axios.get('/api/notes');
+      setNotes(response.data.map((note: any) => ({
+        ...note,
+        createdAt: new Date(note.createdAt)
+      })));
+      setIsLoading(false);
+    } catch (err) {
+      setError('Failed to fetch notes');
+      setIsLoading(false);
     }
   };
 
-  const handleDeleteNote = (id: string) => {
-    setNotes(notes.filter(note => note.id !== id));
+  const handleCreateNote = async () => {
+    if (newNote.title && newNote.content) {
+      try {
+        const response = await axios.post('/api/notes', {
+          title: newNote.title,
+          content: newNote.content
+        });
+
+        setNotes([
+          ...notes,
+          {
+            ...response.data,
+            createdAt: new Date(response.data.createdAt)
+          }
+        ]);
+        
+        setNewNote({ title: '', content: '' });
+        setOpenModal(false);
+      } catch (err) {
+        setError('Failed to create note');
+      }
+    }
   };
+
+  const handleUpdateNote = async () => {
+    if (isEditing && newNote.title && newNote.content) {
+      try {
+        const response = await axios.put(`/api/notes?id=${isEditing.id}`, {
+          title: newNote.title,
+          content: newNote.content
+        });
+
+        setNotes(notes.map(note => 
+          note.id === isEditing.id 
+            ? { ...response.data, createdAt: new Date(response.data.createdAt) }
+            : note
+        ));
+
+        setNewNote({ title: '', content: '' });
+        setIsEditing(null);
+        setOpenModal(false);
+      } catch (err) {
+        setError('Failed to update note');
+      }
+    }
+  };
+
+  const handleDeleteNote = async (id: number) => {
+    try {
+      await axios.delete(`/api/notes?id=${id}`);
+      setNotes(notes.filter(note => note.id !== id));
+    } catch (err) {
+      setError('Failed to delete note');
+    }
+  };
+
+  const openEditModal = (note: Note) => {
+    setNewNote({ title: note.title, content: note.content });
+    setIsEditing(note);
+    setOpenModal(true);
+  };
+
+  const closeModal = () => {
+    setNewNote({ title: '', content: '' });
+    setIsEditing(null);
+    setOpenModal(false);
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="space-y-6">
@@ -49,8 +121,8 @@ export default function NotesSection() {
         </Button>
       </div>
 
-      <Modal show={openModal} onClose={() => setOpenModal(false)}>
-        <Modal.Header>Create New Note</Modal.Header>
+      <Modal show={openModal} onClose={closeModal}>
+        <Modal.Header>{isEditing ? 'Edit Note' : 'Create New Note'}</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
             <div>
@@ -81,8 +153,10 @@ export default function NotesSection() {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={handleCreateNote}>Create Note</Button>
-          <Button color="gray" onClick={() => setOpenModal(false)}>
+          <Button onClick={isEditing ? handleUpdateNote : handleCreateNote}>
+            {isEditing ? 'Update Note' : 'Create Note'}
+          </Button>
+          <Button color="gray" onClick={closeModal}>
             Cancel
           </Button>
         </Modal.Footer>
@@ -96,7 +170,11 @@ export default function NotesSection() {
                 {note.title}
               </h5>
               <div className="flex gap-2">
-                <Button color="gray" size="sm">
+                <Button 
+                  color="gray" 
+                  size="sm" 
+                  onClick={() => openEditModal(note)}
+                >
                   <HiPencil className="h-4 w-4" />
                 </Button>
                 <Button
