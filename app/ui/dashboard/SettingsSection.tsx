@@ -8,15 +8,20 @@ import {
   HiShieldCheck, 
   HiMail 
 } from 'react-icons/hi';
+import { useTheme } from 'next-themes';
 
 const SettingsSection = () => {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [compactView, setCompactView] = useState(false);
 
+  const handleToggle = () => {
+    setCompactView((prev) => !prev);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 id=Settings">
       <h2 className="text-xl font-bold text-gray-900 dark:text-white">
         Account Settings
       </h2>
@@ -65,15 +70,15 @@ const SettingsSection = () => {
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Dark mode</label>
             <ToggleSwitch
-              checked={darkMode}
-              onChange={setDarkMode}
+              checked={theme === "dark"}
+              onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
             />
           </div>
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Compact view</label>
             <ToggleSwitch
               checked={compactView}
-              onChange={setCompactView}
+              onChange={handleToggle}
             />
           </div>
         </div>

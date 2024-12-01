@@ -139,7 +139,7 @@ const TourismCalendar: React.FC<TourismCalendarProps> = ({
         </div>
       </div>
 
-      <div className="border rounded-lg p-4 bg-white dark:bg-gray-800">
+      <div className="border rounded-lg p-4 bg-white dark:text-black dark:bg-gray-100">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"

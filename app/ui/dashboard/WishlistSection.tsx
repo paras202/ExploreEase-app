@@ -3,6 +3,7 @@ import React from 'react';
 import { useState } from 'react';
 import { Card, Badge, Button } from 'flowbite-react';
 import { HiHeart, HiTrash } from 'react-icons/hi';
+import Image from "next/image"; 
 
 const WishlistSection = () => {
   const [wishlistItems] = useState([
@@ -37,11 +38,13 @@ const WishlistSection = () => {
         {wishlistItems.map((item) => (
           <Card key={item.id}>
             <div className="flex space-x-4">
-              <img
-                src={item.image}
-                alt={item.title}
-                className="h-24 w-24 rounded-lg object-cover"
-              />
+            <Image
+            src={item.image}
+            alt={item.title}
+            className="h-24 w-24 rounded-lg object-cover"
+            width={120}
+            height={120}
+            />
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {item.title}
