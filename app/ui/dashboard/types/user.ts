@@ -1,9 +1,9 @@
 // types/user.ts
 export interface User {
-    id: string;
-    username: string | null;
-    email: string | null;
-    imageUrl: string;
-    phoneNumber: string | null;
-    isVerified: boolean;
-  }
+  id: string;
+  username: string | null;
+  email: string;
+  imageUrl: string;
+  phoneNumber: string;
+  isVerified: boolean;
+}

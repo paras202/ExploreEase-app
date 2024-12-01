@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import { Card, Tabs, Badge } from 'flowbite-react';
 import { HiUser, HiHeart, HiDocumentText, HiChartPie, HiCog } from 'react-icons/hi';
-import { User } from "@clerk/nextjs/server";
+import type { User } from './types/user';
 import ProfileSection from '@/app/ui/dashboard/ProfileSection';
 import NotesSection from '@/app/ui/dashboard/NotesSection';
 import WishlistSection from '@/app/ui/dashboard/WishlistSection';
@@ -26,7 +26,7 @@ const DashboardContent = ({ user }: { user?: User }) => {
         {/* Welcome Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome back, {user?.firstName || user?.username || 'User'}!
+            Welcome back, { user?.username || 'User'}!
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-4">
             {"Here's what's happening with your account today."}
@@ -105,11 +105,11 @@ const DashboardContent = ({ user }: { user?: User }) => {
                 <ProfileSection
                   user={{
                     id: user.id,
-                    username: user.username || user.fullName || 'User',
-                    email: user.primaryEmailAddress?.emailAddress || 'No email available',
+                    username: user.username || 'User',
+                    email: user.email || 'No email available',
                     imageUrl: user.imageUrl,
-                    phoneNumber: user.primaryPhoneNumber?.phoneNumber || 'No phone number available',
-                    isVerified: !user.banned && !user.locked, // Example logic for "isVerified"
+                    phoneNumber: user.phoneNumber || 'No phone number available',
+                    isVerified: true, // Example logic for "isVerified"
                   }}
                 />
               ) : (
