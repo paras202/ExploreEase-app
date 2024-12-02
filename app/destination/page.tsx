@@ -1,5 +1,5 @@
 "use client"
-import Destinations from '@/app/ui/Destinations/Destinations'; // Assuming Destinations component is in the same directory
+import Destinations from '@/app/ui/Destinationsf/Destinations'; // Assuming Destinations component is in the same directory
 
 // // Dynamically import the Map component with SSR disabled
   import React from 'react';

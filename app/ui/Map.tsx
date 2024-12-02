@@ -1,8 +1,9 @@
-
+"use client"
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl, ScaleControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl, ScaleControl, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { Navigation2Icon, MapPinIcon } from 'lucide-react';
 
 // Workaround for marker icons
 L.Icon.Default.imagePath = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/";
@@ -43,6 +44,8 @@ const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => {
   const [zoom, setZoom] = useState(10);
   const [userLocation, setUserLocation] = useState<L.LatLng | null>(null);
   const [locationName, setLocationName] = useState<string>('');
+  const [routeCoordinates, setRouteCoordinates] = useState<L.LatLngTuple[]>([]);
+  const [navigationEnabled, setNavigationEnabled] = useState(false);
 
   useEffect(() => {
     if (places.length > 0) {
@@ -64,6 +67,39 @@ const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => {
       .catch(error => console.error('Error fetching location name:', error));
   };
 
+  const toggleNavigation = async () => {
+    if (!userLocation || places.length === 0) return;
+
+    if (!navigationEnabled) {
+      try {
+        // Use OSRM (Open Source Routing Machine) for routing
+        const response = await fetch(
+          `https://router.project-osrm.org/route/v1/driving/${userLocation.lng},${userLocation.lat};${places[0].longitude},${places[0].latitude}?overview=full&geometries=geojson`
+        );
+        const data = await response.json();
+
+        if (data.routes && data.routes.length > 0) {
+          const coordinates = data.routes[0].geometry.coordinates.map(
+            (coord: number[]) => [coord[1], coord[0]] as L.LatLngTuple
+          );
+          setRouteCoordinates(coordinates);
+          setNavigationEnabled(true);
+        }
+      } catch (error) {
+        console.error('Routing error:', error);
+        // Fallback to direct line if routing fails
+        setRouteCoordinates([
+          [userLocation.lat, userLocation.lng],
+          [places[0].latitude, places[0].longitude]
+        ]);
+        setNavigationEnabled(true);
+      }
+    } else {
+      // Disable navigation
+      setRouteCoordinates([]);
+      setNavigationEnabled(false);
+    }
+  };
 
   return (
     <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
@@ -100,40 +136,99 @@ const Map: React.FC<{ places: TouristPlace[] }> = ({ places = [] }) => {
             </Popup>
           </Marker>
         )}
+        {routeCoordinates.length > 0 && (
+          <Polyline 
+            positions={routeCoordinates} 
+            color={navigationEnabled ? 'green' : 'transparent'}
+            weight={5}
+          />
+        )}
         <ZoomControl position="topright" />
         <ScaleControl position="bottomright" />
-        <LocationFinder onLocationFound={handleLocationFound} />
+        {/* <LocationFinder onLocationFound={handleLocationFound} /> */}
+        <MapControls 
+          onLocationFind={handleLocationFound}
+          onToggleNavigation={toggleNavigation} 
+          isNavigating={navigationEnabled}
+          hasUserLocation={!!userLocation}
+          hasDestination={places.length > 0}
+        />
       </MapContainer>
     </div>
   );
 }
 
-// Custom control for finding user's location
-const LocationFinder: React.FC<{ onLocationFound: (e: L.LocationEvent) => void }> = ({ onLocationFound }) => {
+// Consolidated Map Controls Component
+const MapControls: React.FC<{
+  onLocationFind: (e: L.LocationEvent) => void,
+  onToggleNavigation: () => void,
+  isNavigating: boolean,
+  hasUserLocation: boolean,
+  hasDestination: boolean
+}> = ({ 
+  onLocationFind, 
+  onToggleNavigation, 
+  isNavigating, 
+  hasUserLocation,
+  hasDestination 
+}) => {
   const map = useMap();
 
   const findLocation = () => {
     map.locate({ setView: false });
-    map.on('locationfound', onLocationFound);
+    map.on('locationfound', onLocationFind);
   };
 
   return (
-    <div className="leaflet-top leaflet-left">
+    <div className="leaflet-top leaflet-left flex flex-col space-y-2 p-2">
+      {/* Location Finding Button */}
       <div className="leaflet-control leaflet-bar">
-        <a
-          href="#"
-          title="Find my location"
-          role="button"
-          aria-label="Find my location"
+        <button
           onClick={(e) => {
             e.preventDefault();
             findLocation();
           }}
-          className="leaflet-control-zoom-in"
+          className="
+            w-10 h-10 
+            bg-white 
+            shadow-md 
+            rounded-lg 
+            flex items-center justify-center
+            hover:bg-gray-100
+            transition-colors
+          "
+          title="Find my location"
+          aria-label="Find my location"
         >
           📍
-        </a>
+        </button>
       </div>
+
+      {/* Navigation Button - Only show if user location and destination exist */}
+      {hasUserLocation && hasDestination && (
+        <div className="leaflet-control leaflet-bar">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              onToggleNavigation();
+            }}
+            className={`
+              w-10 h-10 
+              shadow-md 
+              rounded-lg 
+              flex items-center justify-center
+              transition-all duration-300
+              ${isNavigating 
+                ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                : 'bg-white text-black hover:bg-gray-100'}
+            `}
+            title={isNavigating ? "Disable Navigation" : "Enable Navigation"}
+            aria-label={isNavigating ? "Disable Navigation" : "Enable Navigation"}
+          >
+            {isNavigating ? <MapPinIcon size={20} /> : <Navigation2Icon size={20} />}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

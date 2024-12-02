@@ -15,7 +15,7 @@ const DynamicMap = dynamic(() => import('./Map'), {
   loading: () => <p>Loading map...</p>
 });
 
-const API_KEY = 'a9d6b71bf0msha66dedcd030fe02p1162e9jsn4541dd5fd368';
+const API_KEY = 'c95d6d5ad4msh1e6bd14a1839407p166751jsne4fccb50d62b';
 
 export default function Homepage() {
   const { places, setPlaces, initialPlacesFetched, setInitialPlacesFetched } = useTouristPlaces();

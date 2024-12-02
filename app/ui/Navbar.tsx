@@ -3,21 +3,21 @@
 import { useState } from "react";
 import { Navbar as FlowbiteNavbar, TextInput, Button, Toast } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { FaMoon, FaSun } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
 import { CiAirportSign1 } from "react-icons/ci";
-import { useTheme } from "next-themes";
 import { MdMyLocation } from "react-icons/md";
-import { HiX } from 'react-icons/hi';
+import { WiDaySunny } from "react-icons/wi";
+import Weather from "./weather/Weather";
 
 export default function Navbar() {
   const path = usePathname();
-  const { theme, setTheme } = useTheme();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [locationName, setLocationName] = useState("");
+  const [weatherLocation, setWeatherLocation] = useState<{ lat: number; lon: number; name?: string } | null>(null);
+  const [isWeatherOpen, setIsWeatherOpen] = useState(false);
 
   const handleLocationClick = () => {
     if ("geolocation" in navigator) {
@@ -25,13 +25,17 @@ export default function Navbar() {
         async (position) => {
           const { latitude, longitude } = position.coords;
           try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
             const data = await response.json();
             const address = data.display_name;
             const shortName = data.address.city || data.address.town || data.address.village || data.address.hamlet;
             setLocationName(shortName || "Unknown location");
+            setWeatherLocation({ lat: latitude, lon: longitude, name: shortName });
             setToastMessage(`Address: ${address}`);
             setShowToast(true);
+            setIsWeatherOpen(true);
           } catch (error) {
             console.error("Error fetching location data:", error);
             setToastMessage("Error fetching location details");
@@ -60,37 +64,38 @@ export default function Navbar() {
             </span>
           </span>
         </FlowbiteNavbar.Brand>
-        
-        <form className="hidden lg:flex items-center space-x-2">
-          <TextInput
-            type="text"
-            placeholder="Search..."
-            icon={AiOutlineSearch}
-            className="lg:inline"
-          />
-        </form>
-        
-        <div className="flex items-center gap-2">
-          <MdMyLocation 
-            className="text-xl text-purple-600 dark:text-white cursor-pointer hover:opacity-50"
-            onClick={handleLocationClick}
-          />
-          {locationName && (
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {locationName}
-            </span>
-          )}
-        </div>
+             <div className="flex items-center gap-2">
+                <Button
+                  color="gray"
+                  pill
+                  size="sm"
+                  onClick={handleLocationClick}
+                  className="flex items-center gap-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-300"
+                >
+                  <MdMyLocation className="text-xl md:text-4xl md:p-2 text-gray-600 dark:text-gray-300" />
+                  {locationName ? (
+                    <>
+                      <span className="hidden md:p-2 md:inline text-gray-800 dark:text-gray-200 font-medium">
+                        {locationName}
+                      </span>
+                      <WiDaySunny
+                        className="text-xl md:text-4xl md:p-2 cursor-pointer text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-500 transition-colors"
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          setIsWeatherOpen(true);
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <span className="hidden md:inline text-gray-600 dark:text-gray-300">
+                      Get Location
+                    </span>
+                  )}
+                </Button>
+              </div>
 
-        <div className="flex gap-1 md:order-2">
-          {/* <Button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="w-10 gap-1 md:w-12 md:h-10 sm:inline"
-            color="gray"
-          >
-            {theme === "dark" ? <FaSun className="md:text-xl" /> : <FaMoon className="md:text-xl text-purple-600" />}
-          </Button> */}
-          
+        <div className="flex md:order-2 items-center gap-4">
+
           <SignedOut>
             <SignInButton>
               <Button gradientDuoTone="purpleToBlue" outline pill>
@@ -104,7 +109,6 @@ export default function Navbar() {
 
           <FlowbiteNavbar.Toggle/>
         </div>
-        
         <FlowbiteNavbar.Collapse>
           <FlowbiteNavbar.Link as={Link} href="/" active={path === "/"}>
             Home
@@ -118,18 +122,22 @@ export default function Navbar() {
         </FlowbiteNavbar.Collapse>
       </FlowbiteNavbar>
 
+      <Weather
+        location={weatherLocation}
+        isOpen={isWeatherOpen}
+        onClose={() => setIsWeatherOpen(false)}
+      />
+
       {showToast && (
-        <div className="fixed bottom-5 right-5 z-50">
-          <Toast className="max-w-xl">
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-500 dark:bg-blue-800 dark:text-blue-200">
-              <MdMyLocation className="h-5 w-5" />
-            </div>
-            <div className="ml-3 text-sm font-normal">
-              {toastMessage}
-            </div>
-            <Toast.Toggle onDismiss={() => setShowToast(false)} />
-          </Toast>
-        </div>
+        <Toast className="fixed bottom-20 right-3 md:bottom-5 z-50">
+          <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-500 dark:bg-blue-800 dark:text-blue-200">
+            <MdMyLocation className="h-5 w-5" />
+          </div>
+          <div className="ml-3 text-sm font-normal">
+            {toastMessage}
+          </div>
+          <Toast.Toggle onDismiss={() => setShowToast(false)} />
+        </Toast>
       )}
     </>
   );

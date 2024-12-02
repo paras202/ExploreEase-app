@@ -69,3 +69,46 @@ model Activity {
   description String
   createdAt DateTime @default(now())
 }
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Foreign key to link comment to a specific tourist place
+  placeId   String
+  
+  // User details from Clerk
+  userId    String
+  userName  String?
+  userImage String?
+
+  // Interactions
+  likes     Like[]
+  replies   Reply[]
+
+  @@index([placeId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+  
+  @@unique([userId, commentId])
+}
+
+model Reply {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  userName  String?
+  userImage String?
+  
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+}

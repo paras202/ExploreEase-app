@@ -15,7 +15,7 @@
 //     offset: (page - 1) * 12
 //   },
 //   headers: {
-//     'x-rapidapi-key': 'a9d6b71bf0msha66dedcd030fe02p1162e9jsn4541dd5fd368',
+//     'x-rapidapi-key': 'c95d6d5ad4msh1e6bd14a1839407p166751jsne4fccb50d62b',
 //     'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
 //   }
 // });
@@ -132,7 +132,7 @@
 // import { useTouristPlaces } from './TouristPlaceContent';
 
 // const API_URL = 'https://travel-advisor.p.rapidapi.com/attractions/list-in-boundary';
-// const API_KEY = 'a9d6b71bf0msha66dedcd030fe02p1162e9jsn4541dd5fd368';
+// const API_KEY = 'c95d6d5ad4msh1e6bd14a1839407p166751jsne4fccb50d62b';
 
 // const options = (page: number) => ({
 //   params: {
@@ -261,7 +261,7 @@ import Image from 'next/image';
 import { useTouristPlaces } from './TouristPlaceContent';
 
 const API_URL = 'https://travel-advisor.p.rapidapi.com/attractions/list-in-boundary';
-const API_KEY = 'a9d6b71bf0msha66dedcd030fe02p1162e9jsn4541dd5fd368';
+const API_KEY = 'c95d6d5ad4msh1e6bd14a1839407p166751jsne4fccb50d62b';
 
 const options = (page: number) => ({
   params: {

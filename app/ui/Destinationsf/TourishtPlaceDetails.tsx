@@ -6,6 +6,7 @@ import Map from '../Map';
 import Link from 'next/link';
 // import BookingModal from '../TouristBookingModel';
 import { Button } from 'flowbite-react'
+import TouristPlaceComments from '@/app/ui/Destinationsf/TouristPlaceComments';
 
 interface TouristPlace {
   id: number;
@@ -25,7 +26,7 @@ const API_URL = 'https://travel-advisor.p.rapidapi.com/attractions/get-details';
 const options = (id: string) => ({
   params: { location_id: id },
   headers: {
-    'x-rapidapi-key': '39b5c614c7msha8557f39ffaafbap12192bjsn26dc06ce52b0',
+    'x-rapidapi-key': 'c95d6d5ad4msh1e6bd14a1839407p166751jsne4fccb50d62b',
     'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
   }
 });
@@ -156,6 +157,7 @@ const TouristPlaceDetails = ({ id }: Props) => {
             </div>
           </div>
         </div>
+        <TouristPlaceComments placeId={id.toString()}/>
       </div>
     </div>
   );
