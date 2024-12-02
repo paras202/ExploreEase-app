@@ -10,7 +10,7 @@ import ActivitySection from '@/app/ui/dashboard/ActivitySection';
 import SettingsSection from '@/app/ui/dashboard/SettingsSection';
 
 // Create a client wrapper component
-const DashboardContent = ({ user }) => {
+const DashboardContent = ({ user }:{user:any}) => {
   // Create tab icons components to avoid direct function passing
   const TabIcons = {
     Profile: () => <HiUser className="h-5 w-5" />,

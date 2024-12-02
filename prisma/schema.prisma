@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -11,27 +6,54 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-}
-        
-model City {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
-  country     String
-  latitude    Float
-  longitude   Float
-  description String
-  image       String
-  places      Place[]
+} 
+
+
+enum IdProofType {
+  DRIVING_LICENSE
+  AADHAR_CARD
+  PAN_CARD
+  PASSPORT
+  VOTER_ID
 }
 
-model Place {
-  id          Int    @id @default(autoincrement())
-  name        String
-  latitude    Float
-  longitude   Float
-  description String
-  image       String
-  cityId      Int
-  city        City   @relation(fields: [cityId], references: [id])
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  UPI
+  NET_BANKING
+  WALLET
+  PENDING
 }
+
+model TicketBooking {
+  id              String        @id @default(cuid())
+  UserId     String        // Store Clerk's user ID
+  userName        String
+  email           String
+  idProofType     IdProofType
+  idProofNumber   String
+  
+  // Tourist Place Details
+  placeName       String
+  placeLocation   String
+  latitude        Float
+  longitude       Float
+  bookingReference String
+  
+  // Booking Details
+  bookingDate     DateTime      @default(now())
+  numberOfTickets Int
+  pricePerTicket  Float
+  totalAmount     Float         @default(0)
+  paymentMethod   PaymentMethod
+  
+  // Status and Timestamps
+ 
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([UserId])
+  @@index([email])
+}
+

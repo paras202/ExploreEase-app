@@ -261,7 +261,7 @@ import Image from 'next/image';
 import { useTouristPlaces } from './TouristPlaceContent';
 
 const API_URL = 'https://travel-advisor.p.rapidapi.com/attractions/list-in-boundary';
-const API_KEY = 'a9d6b71bf0msha66dedcd030fe02p1162e9jsn4541dd5fd368';
+const API_KEY = 'b6f891c2b4msh2001f9ae26a926ep1fc7eajsn82673689b0c5';
 
 const options = (page: number) => ({
   params: {
@@ -290,6 +290,7 @@ const Destination: React.FC = () => {
     setLoading(true);
     try {
       const { data: { data, paging } } = await axios.get(API_URL, options(currentPage));
+      console.log(data);
       const transformedData = data
         .filter((place: any) => !isNaN(parseFloat(place.latitude)) && !isNaN(parseFloat(place.longitude)))
         .map((place: any) => ({

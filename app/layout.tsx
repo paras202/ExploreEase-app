@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/app/ui/Theme-Provider";
 import PageWrapper from "./ui/ClientSideWrapper";
 import { TouristPlacesProvider } from "./ui/TouristPlaceContent";
+import { Toaster } from 'sonner';
 // import MobileLandingPage from "@/app/ui/MobileLanding";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -30,6 +31,7 @@ export default function RootLayout({
             <TouristPlacesProvider>
               <PageWrapper>
                 {children}
+                <Toaster richColors />
               </PageWrapper>
             </TouristPlacesProvider>
           </ThemeProvider>

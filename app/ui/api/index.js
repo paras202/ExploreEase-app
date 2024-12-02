@@ -8,7 +8,7 @@ const options = {
     bl_latitude: '12.113245',
   },
   headers: {
-    'x-rapidapi-key': '9e73649d8emsha08d129c09456f7p143b76jsnfe4090fc2a73',
+    'x-rapidapi-key': 'b6f891c2b4msh2001f9ae26a926ep1fc7eajsn82673689b0c5',
     'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
   }
 };
