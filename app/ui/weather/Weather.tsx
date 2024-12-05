@@ -9,12 +9,11 @@ import {
   WiSnow,
   WiCloudy,
   WiNightClear,
+  WiDayCloudyHigh,
 } from "react-icons/wi";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { FaTemperatureHigh, FaWind } from "react-icons/fa";
 import { WiHumidity } from "react-icons/wi";
-import Image from "next/image";
-
 
 interface WeatherData {
   name: string;
@@ -38,17 +37,19 @@ interface WeatherData {
 }
 
 interface ForecastData {
-  daily: Array<{
+  list: Array<{
     dt: number;
-    temp: {
-      max: number;
-      min: number;
+    main: {
+      temp: number;
+      humidity: number;
     };
     weather: Array<{
-      main: string;
       description: string;
-      icon: string;
+      main: string;
     }>;
+    wind: {
+      speed: number;
+    };
   }>;
 }
 
@@ -58,7 +59,7 @@ interface WeatherProps {
   onClose: () => void;
 }
 
-const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY; // Get from openweathermap.org
+const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
 
 export default function Weather({ location, isOpen, onClose }: WeatherProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -83,12 +84,12 @@ export default function Weather({ location, isOpen, onClose }: WeatherProps) {
         setWeather(weatherData);
 
         // Fetch forecast data
-    //     const forecastRes = await fetch(
-    //       `https://api.openweathermap.org/data/2.5/onecall?lat=${location.lat}&lon=${location.lon}&exclude=current,minutely,hourly,alerts&units=metric&appid=${API_KEY}`
-    //     );
-    //     if (!forecastRes.ok) throw new Error("Forecast data fetch failed");
-    //     const forecastData: ForecastData = await forecastRes.json();
-    //     setForecast(forecastData);
+        const forecastRes = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&units=metric&appid=${API_KEY}`
+        );
+        if (!forecastRes.ok) throw new Error("Forecast data fetch failed");
+        const forecastData: ForecastData = await forecastRes.json();
+        setForecast(forecastData);
       } catch (err) {
         setError("Failed to fetch weather data");
         console.error(err);
@@ -112,9 +113,33 @@ export default function Weather({ location, isOpen, onClose }: WeatherProps) {
       return <WiSnow className="text-6xl text-blue-200" />;
     } else if (lowerCondition.includes("night")) {
       return <WiNightClear className="text-6xl text-blue-900" />;
+    } else if (lowerCondition.includes("cloud")) {
+      return <WiDayCloudyHigh className="text-6xl text-gray-400" />;
     } else {
       return <WiCloudy className="text-6xl text-gray-400" />;
     }
+  };
+
+  // Helper to format date from timestamp
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  // Filter forecast to get one entry per day
+  const getDailyForecast = () => {
+    if (!forecast) return [];
+    
+    const dailyForecasts: { [key: string]: any } = {};
+    
+    forecast.list.forEach(forecastItem => {
+      const date = formatDate(forecastItem.dt);
+      if (!dailyForecasts[date]) {
+        dailyForecasts[date] = forecastItem;
+      }
+    });
+
+    return Object.values(dailyForecasts).slice(0, 5);
   };
 
   return (
@@ -187,37 +212,30 @@ export default function Weather({ location, isOpen, onClose }: WeatherProps) {
               </Card>
             </div>
 
-            {/* {forecast && (
+            {forecast && (
               <Card>
-                <h3 className="text-xl font-semibold mb-4">7-Day Forecast</h3>
-                <div className="grid grid-cols-7 gap-2">
-                  {forecast.daily.map((day) => (
-                    <div key={day.dt} className="text-center">
-                      <p className="text-sm font-medium">
-                        {new Date(day.dt * 1000).toLocaleDateString("en-US", {
-                          weekday: "short",
-                        })}
+                <h3 className="text-xl font-semibold mb-4">5-Day Forecast</h3>
+                <div className="grid grid-cols-5 gap-2">
+                  {getDailyForecast().map((forecastItem, index) => (
+                    <div 
+                      key={index} 
+                      className="text-center bg-gray-100 dark:bg-gray-700 rounded-lg p-2"
+                    >
+                      <p className="font-medium">
+                        {formatDate(forecastItem.dt)}
                       </p>
-                      <div className="my-2">
-                        <Image
-                          src={`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
-                          alt={day.weather[0].description}
-                          width={50} // Adjust width based on your design
-                          height={50} // Adjust height based on your design
-                          priority={true} // Ensures faster loading of critical images
-                        />
-                      </div>
-                      <p className="text-sm font-medium">
-                        {day.temp.max.toFixed(1)}°
+                      {getWeatherIcon(forecastItem.weather[0].main)}
+                      <p className="text-sm">
+                        {forecastItem.main.temp.toFixed(1)}°C
                       </p>
-                      <p className="text-sm text-gray-500">
-                        {day.temp.min.toFixed(1)}°
+                      <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                        {forecastItem.weather[0].description}
                       </p>
                     </div>
                   ))}
                 </div>
               </Card>
-            )} */}
+            )}
           </div>
         )}
       </Modal.Body>

@@ -172,7 +172,7 @@ const ExploreBotComponent: React.FC = () => {
     <>
       {/* Floating Chat Toggle */}
       <div 
-        className="fixed bottom-6 right-6 z-50 cursor-pointer"
+        className="fixed bottom-16 left-6 z-50 cursor-pointer"
         onClick={() => setIsChatOpen(!isChatOpen)}
       >
         <div className="relative">
