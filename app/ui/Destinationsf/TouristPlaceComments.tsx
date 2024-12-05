@@ -39,10 +39,14 @@ const TouristPlaceComments = ({ placeId }: Props) => {
     const fetchComments = async () => {
       try {
         const response = await fetch(`/api/comments?placeId=${placeId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch comments');
+        }
         const data = await response.json();
-        setComments(data);
+        setComments(data || []); // Provide a fallback empty array
       } catch (err) {
         console.error('Failed to fetch comments', err);
+        setComments([]); // Set to empty array on error
       }
     };
 
