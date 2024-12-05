@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db } from '@/app/lib/db';
 
 export async function GET() {
   try {
-    const wishlistItems = await prisma.wishlistItem.findMany({
+    const wishlistItems = await db.wishlistItem.findMany({
       orderBy: { addedDate: 'desc' }
     });
     return NextResponse.json(wishlistItems);
@@ -17,7 +15,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const { title, price, image } = await request.json();
-    const newItem = await prisma.wishlistItem.create({
+    const newItem = await db.wishlistItem.create({
       data: { title, price, image }
     });
     return NextResponse.json(newItem, { status: 201 });
@@ -31,7 +29,7 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
-    await prisma.wishlistItem.delete({ where: { id: Number(id) } });
+    await db.wishlistItem.delete({ where: { id: Number(id) } });
     
     return new NextResponse(null, { status: 204 });
   } catch (error) {

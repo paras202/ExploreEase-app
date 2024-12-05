@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db } from '@/app/lib/db';
 
 // Create a comment
 export async function POST(request: NextRequest) {
@@ -22,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create comment
-    const comment = await prisma.comment.create({
+    const comment = await db.comment.create({
       data: {
         placeId,
         content,
@@ -51,7 +49,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch comments with likes and current user's like status
-    const comments = await prisma.comment.findMany({
+    const comments = await db.comment.findMany({
       where: { placeId },
       orderBy: { createdAt: 'desc' },
       include: {

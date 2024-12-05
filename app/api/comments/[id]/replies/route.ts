@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { PrismaClient } from '@prisma/client';
 import { currentUser } from '@clerk/nextjs/server';
-
-const prisma = new PrismaClient();
+import { db } from '@/app/lib/db'
 
 export async function POST(
   request: NextRequest,
@@ -24,7 +22,7 @@ export async function POST(
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
     }
 
-    const reply = await prisma.reply.create({
+    const reply = await db.reply.create({
       data: {
         content,
         commentId,
@@ -47,7 +45,7 @@ export async function GET(
     try 
     {    
         const commentId = params.id;      
-        const replies = await prisma.reply.findMany({       
+        const replies = await db.reply.findMany({       
             where: { commentId },       
             orderBy: { createdAt: 'desc' }     
         });      

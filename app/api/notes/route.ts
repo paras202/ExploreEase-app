@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db } from '@/app/lib/db';
 
 export async function GET() {
   try {
-    const notes = await prisma.note.findMany({
+    const notes = await db.note.findMany({
       orderBy: { createdAt: 'desc' }
     });
     return NextResponse.json(notes);
@@ -17,7 +15,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const { title, content } = await request.json();
-    const newNote = await prisma.note.create({
+    const newNote = await db.note.create({
       data: { title, content }
     });
     return NextResponse.json(newNote, { status: 201 });
@@ -32,7 +30,7 @@ export async function PUT(request: NextRequest) {
     const id = searchParams.get('id');
     const { title, content } = await request.json();
     
-    const updatedNote = await prisma.note.update({
+    const updatedNote = await db.note.update({
       where: { id: Number(id) },
       data: { title, content }
     });
@@ -48,7 +46,7 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
-    await prisma.note.delete({ where: { id: Number(id) } });
+    await db.note.delete({ where: { id: Number(id) } });
     
     return new NextResponse(null, { status: 204 });
   } catch (error) {

@@ -1,9 +1,8 @@
 // app/api/comments/[id]/like/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { PrismaClient } from '@prisma/client';
+import { db } from '@/app/lib/db';
 
-const prisma = new PrismaClient();
 export async function POST(
     request: NextRequest, 
     { params }: { params: { id: string } }
@@ -18,7 +17,7 @@ export async function POST(
       const commentId = params.id;
   
       // Try to find an existing like
-      const existingLike = await prisma.like.findUnique({
+      const existingLike = await db.like.findUnique({
         where: {
           userId_commentId: {
             userId,
@@ -29,13 +28,13 @@ export async function POST(
   
       if (existingLike) {
         // Unlike the comment
-        await prisma.like.delete({
+        await db.like.delete({
           where: { id: existingLike.id }
         });
         return NextResponse.json({ liked: false });
       } else {
         // Like the comment
-        await prisma.like.create({
+        await db.like.create({
           data: {
             userId,
             commentId
