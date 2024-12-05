@@ -1,6 +1,6 @@
 'use server'
 import { db } from './db'
-import { PaymentMethod, IdProofType } from '@prisma/client'
+import { PaymentMethod, IdProofType, Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache';
 
 export async function createBooking(formData: FormData) {
@@ -29,6 +29,7 @@ export async function createBooking(formData: FormData) {
       throw new Error(paymentValidation.message)
     }
     // Create booking in database
+    const result = await db.$transaction(async (db) => {
     const booking = await db.ticketBooking.create({
       data: {
         UserId: userId,
@@ -60,9 +61,11 @@ export async function createBooking(formData: FormData) {
           backgroundColor: '#22c55e'
         }
       });
+      return { booking, travelEvent };
+    });
     // Construct redirect URL with booking details
     const redirectUrl = `/booking-confirmation?` + 
-      `bookingId=${booking.id}` +
+      `bookingId=${result.booking.id}` +
       `&bookingReference=${bookingReference}` +
       `&userName=${encodeURIComponent(userName)}` +
       `&placeName=${encodeURIComponent(placeName)}` +
@@ -72,18 +75,29 @@ export async function createBooking(formData: FormData) {
       `&bookingDate=${encodeURIComponent(bookingDate)}`
     return { 
       success: true, 
-      bookingId: booking.id,
-      bookingReference,
+      bookingId: result.booking.id,
+      bookingReference: result.booking.bookingReference,
       redirectUrl,
-      travelEventId: travelEvent.id
+      travelEventId: result.travelEvent.id
     }
   } catch (error) {
     console.error('Booking creation error:', error)
-    return { 
-      success: false, 
-      message: error instanceof Error ? error.message : 'Booking failed' 
+  // More specific error handling
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    // Handle specific Prisma errors
+    if (error.code === 'P2002') {
+      return { 
+        success: false, 
+        message: 'Duplicate booking or constraint violation' 
+      }
     }
   }
+
+  return { 
+    success: false, 
+    message: error instanceof Error ? error.message : 'Booking failed' 
+  }
+}
 }
 // Mock Payment Processing Function
 async function mockPaymentProcessing(
