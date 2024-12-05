@@ -15,7 +15,7 @@ export default function Footer() {
                 ExploreEase
               </span>
             </Link>
-            <p className="mt-2 text-sm">A comprehensive web platform for travel and tourism.</p>
+            <p className="mt-2 text-sm">Making your travel dreams a reality. Discover amazing destinations and create unforgettable memories.</p>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2">About</h3>
@@ -31,6 +31,14 @@ export default function Footer() {
               <li><Link href="/terms" className="hover:text-blue-500">Terms & Conditions</Link></li>
             </ul>
           </div>
+          <div>
+              <h3 className="text-xl font-bold mb-4">Contact Us</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>Email: exploreease39@gmail.com</li>
+                <li>Phone: +91 15110-15510</li>
+                <li>Hours: Mon-Fri 9AM-6PM EST</li>
+              </ul>
+            </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-500 dark:border-white flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-gray-500 dark:text-gray-200">© {new Date().getFullYear()} ExploreEase. All rights reserved.</p>
