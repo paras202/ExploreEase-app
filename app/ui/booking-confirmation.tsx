@@ -25,6 +25,7 @@ export default function BookingConfirmation() {
   const router = useRouter()
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null)
   const [qrCodeUrl, setQrCodeUrl] = useState('')
+ 
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
@@ -40,9 +41,11 @@ export default function BookingConfirmation() {
           bookingReference: searchParams.get('bookingReference') || ''
         }
         setBookingDetails(mockBookingDetails)
+       
         const qrCodeData = JSON.stringify(mockBookingDetails)
         const qrCode = await QRCode.toDataURL(qrCodeData)
         setQrCodeUrl(qrCode)
+       
         if (mockBookingDetails.email) {
           const emailSent = await sendBookingConfirmationEmail(mockBookingDetails)
           if (emailSent) {
@@ -51,6 +54,12 @@ export default function BookingConfirmation() {
             toast.error('Failed to Send Confirmation Email')
           }
         }
+        
+        // Add a toast notification for travel event
+         toast.success('Travel Event Added', {
+          description: `Your trip to ${mockBookingDetails.placeName} has been added to your travel planner`
+        })
+
         toast.success('Booking Confirmed', {
           description: `Ticket booked for ${mockBookingDetails.placeName}`
         })

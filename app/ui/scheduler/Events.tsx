@@ -1,12 +1,28 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { EventClickArg } from '@fullcalendar/core';
-import { Modal, Label, TextInput, Textarea, Button, Select } from 'flowbite-react';
-import { CalendarDays } from 'lucide-react';
+import { 
+  Modal, 
+  Label, 
+  TextInput, 
+  Textarea, 
+  Button, 
+  Select 
+} from 'flowbite-react';
+import { 
+  CalendarDays, 
+  PlaneTakeoff, 
+  MapPin, 
+  NotebookText, 
+  CheckCircle2, 
+  Clock 
+} from 'lucide-react';
+import { getTravelEvents, createTravelEvent } from '@/app/lib/action';
 
 interface TravelEvent {
   id: string;
@@ -14,75 +30,70 @@ interface TravelEvent {
   start: string;
   end?: string;
   backgroundColor: string;
+  borderColor: string;
   extendedProps: {
     description: string;
-    status: 'planned' | 'booked';
+    status: 'PLANNED' | 'BOOKED';
   };
 }
 
 interface NewEventForm {
   title: string;
   description: string;
-  status: 'planned' | 'booked';
+  start: string;
+  end?: string;
+  status: 'PLANNED' | 'BOOKED';
 }
 
 interface TourismCalendarProps {
-  initialEvents?: TravelEvent[];
-  onEventAdd?: (event: TravelEvent) => void;
-  onEventClick?: (event: TravelEvent) => void;
+  userId: string;
 }
 
-const TourismCalendar: React.FC<TourismCalendarProps> = ({
-  initialEvents = [],
-  onEventAdd,
-  onEventClick
-}) => {
-  // Initial events state with proper typing
-  const [events, setEvents] = useState<TravelEvent[]>(initialEvents.length > 0 ? initialEvents : [
-    {
-      id: '1',
-      title: 'Paris Trip',
-      start: '2024-11-25',
-      end: '2024-11-28',
-      backgroundColor: '#22c55e',
-      extendedProps: {
-        description: 'Booked flight and hotel for Paris vacation',
-        status: 'booked'
-      }
-    },
-    {
-      id: '2',
-      title: 'Beach Resort',
-      start: '2024-12-15',
-      end: '2024-12-20',
-      backgroundColor: '#22c55e',
-      extendedProps: {
-        description: 'All-inclusive beach resort booking',
-        status: 'booked'
-      }
-    },
-    {
-      id: '3',
-      title: 'Mountain Trek',
-      start: '2024-12-05',
-      backgroundColor: '#f97316',
-      extendedProps: {
-        description: 'Interested in mountain trekking tour',
-        status: 'planned'
-      }
-    }
-  ]);
-
+const TourismCalendar: React.FC<TourismCalendarProps> = ({ userId }) => {
+  const [events, setEvents] = useState<TravelEvent[]>([]);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [newEvent, setNewEvent] = useState<NewEventForm>({
     title: '',
     description: '',
-    status: 'planned'
+    start: '',
+    end: '',
+    status: 'PLANNED'
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch existing events on component mount
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const userEvents = await getTravelEvents(userId);
+        setEvents(userEvents.map(event => ({
+          id: event.id,
+          title: event.title,
+          start: event.start.toISOString(),
+          end: event.end?.toISOString(),
+          backgroundColor: event.status === 'BOOKED' ? '#22c55e' : '#f97316', // Green for booked, Orange for planned
+          borderColor: event.status === 'BOOKED' ? '#22c55e' : '#f97316',
+          extendedProps: {
+            description: event.description || '',
+            status: event.status
+          }
+        })));
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
+  }, [userId]);
 
   const handleDateClick = (arg: DateClickArg): void => {
     setSelectedDate(arg.dateStr);
+    setNewEvent({
+      ...newEvent,
+      start: arg.dateStr,
+      end: ''
+    });
     setOpenModal(true);
   };
 
@@ -90,95 +101,174 @@ const TourismCalendar: React.FC<TourismCalendarProps> = ({
     const event = arg.event;
     setNewEvent({
       title: event.title,
-      description: event.extendedProps.description,
-      status: event.extendedProps.status as 'planned' | 'booked'
+      description: event.extendedProps.description as string,
+      start: event.startStr,
+      end: event.endStr || '',
+      status: event.extendedProps.status as 'PLANNED' | 'BOOKED'
     });
     setSelectedDate(event.startStr);
     setOpenModal(true);
-    onEventClick?.(event as unknown as TravelEvent);
   };
 
-  const handleSubmit = (): void => {
-    if (!selectedDate) return;
+  const handleSubmit = async (): Promise<void> => {
+    try {
+      setIsSubmitting(true);
+      const eventData = {
+        ...newEvent,
+        userId: userId
+      };
 
-    const eventId = Math.random().toString(36).substr(2, 9);
-    const backgroundColor = newEvent.status === 'booked' ? '#22c55e' : '#f97316';
-    
-    const newTravelEvent: TravelEvent = {
-      id: eventId,
-      title: newEvent.title,
-      start: selectedDate,
-      backgroundColor,
-      extendedProps: {
-        description: newEvent.description,
-        status: newEvent.status
-      }
-    };
+      const createdEvent = await createTravelEvent(eventData);
 
-    setEvents([...events, newTravelEvent]);
-    onEventAdd?.(newTravelEvent);
-    setNewEvent({ title: '', description: '', status: 'planned' });
-    setOpenModal(false);
+      // Update local state
+      const newEventFormatted: TravelEvent = {
+        id: createdEvent.id,
+        title: createdEvent.title,
+        start: createdEvent.start.toISOString(),
+        end: createdEvent.end?.toISOString(),
+        backgroundColor: createdEvent.status === 'BOOKED' ? '#22c55e' : '#f97316',
+        borderColor: createdEvent.status === 'BOOKED' ? '#22c55e' : '#f97316',
+        extendedProps: {
+          description: createdEvent.description || '',
+          status: createdEvent.status
+        }
+      };
+
+      // Update events state
+      setEvents(prevEvents => {
+        // Remove existing event if it exists
+        const filteredEvents = prevEvents.filter(e => e.id !== newEventFormatted.id);
+        return [...filteredEvents, newEventFormatted];
+      });
+
+      // Reset form and close modal
+      setNewEvent({
+        title: '',
+        description: '',
+        start: '',
+        end: '',
+        status: 'PLANNED'
+      });
+      setOpenModal(false);
+    } catch (error) {
+      console.error('Error creating event:', error);
+    } finally {
+      setIsSubmitting(false);
+    } 
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      <div className="mb-6 flex items-center gap-2">
-        <CalendarDays className="w-6 h-6" />
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Travel Calendar</h1>
-      </div>
-      
-      <div className="mb-4 flex gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-green-500" />
-          <span className="text-gray-700 dark:text-gray-200">Booked</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-orange-500" />
-          <span className="text-gray-700 dark:text-gray-200">Planned</span>
-        </div>
-      </div>
-
-      <div className="border rounded-lg p-4 bg-white dark:text-black dark:bg-gray-100">
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek'
-          }}
-          events={events}
-          dateClick={handleDateClick}
-          eventClick={handleEventClick}
-          height="auto"
-        />
-      </div>
-
-      <Modal show={openModal} onClose={() => setOpenModal(false)}>
-        <Modal.Header>
-          {selectedDate ? `Add Event for ${selectedDate}` : 'Event Details'}
-        </Modal.Header>
-        <Modal.Body>
-          <div className="space-y-6">
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="title" value="Title" />
-              </div>
-              <TextInput
-                id="title"
-                type="text"
-                value={newEvent.title}
-                onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-                placeholder="Enter event title"
-                required
-              />
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-800 dark:to-blue-900 py-8 px-4 text-gray-900 dark:text-white"
+    >
+      <div className="max-w-7xl mx-auto">
+        <motion.div 
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          className="mb-8 flex flex-col md:flex-row items-center justify-center gap-4 bg-white/20 dark:bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-2xl"
+        >
+          <motion.div 
+            whileHover={{ rotate: 360 }}
+            transition={{ duration: 0.6 }}
+          >
+            <CalendarDays className="w-10 h-10 text-white" />
+          </motion.div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-center text-white">
+            Travel Planner
+          </h1>
+        </motion.div>
+        
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8 flex flex-wrap gap-4 justify-center"
+        >
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center gap-3 bg-white/30 dark:bg-white/20 backdrop-blur-md px-4 py-2 rounded-full"
+          >
+            <div className="w-4 h-4 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-white font-semibold">Booked</span>
+          </motion.div>
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center gap-3 bg-white/30 dark:bg-white/20 backdrop-blur-md px-4 py-2 rounded-full"
+          >
+            <div className="w-4 h-4 rounded-full bg-orange-500 animate-pulse" />
+            <span className="text-white font-semibold">Planned</span>
+          </motion.div>
+        </motion.div>
+  
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-2xl"
+        >
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek'
+            }}
+            events={events}
+            dateClick={handleDateClick}
+            eventClick={handleEventClick}
+            height="auto"
+            eventClassNames={(arg) => 'hover:scale-105 transition-transform duration-200'}
+            eventColor="#10B981"
+            eventBorderColor="#10B981"
+            contentHeight="auto"
+            // Dark mode specific calendar styling can be added here if needed
+          />
+        </motion.div>
+  
+        <Modal 
+          show={openModal} 
+          onClose={() => setOpenModal(false)}
+          size="md"
+          popup
+        >
+          <Modal.Header className="bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800 text-white">
+            <div className="flex items-center gap-3 p-4">
+              <PlaneTakeoff className="w-6 h-6" />
+              <span className="text-lg font-semibold">
+                {selectedDate ? `Add Event for ${selectedDate}` : 'Event Details'}
+              </span>
             </div>
-            
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="description" value="Description" />
+          </Modal.Header>
+          <Modal.Body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div>
+                <Label htmlFor="title" className="flex items-center gap-2 mb-2">
+                  <MapPin className="w-4 h-4 text-green-500" /> Title
+                </Label>
+                <TextInput
+                  id="title"
+                  type="text"
+                  value={newEvent.title}
+                  onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                  placeholder="Enter event title"
+                  required
+                  icon={() => <MapPin className="w-5 h-5 text-green-500" />}
+                />
               </div>
+              <div>
+              <Label htmlFor="description" className="flex items-center gap-2 mb-2 text-gray-900 dark:text-white">
+                <NotebookText className="w-4 h-4 text-blue-500" /> Description
+              </Label>
               <Textarea
                 id="description"
                 value={newEvent.description}
@@ -186,35 +276,84 @@ const TourismCalendar: React.FC<TourismCalendarProps> = ({
                 placeholder="Add notes or description"
                 required
                 rows={4}
+                className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600"
               />
             </div>
-            
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="status" value="Status" />
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="start" className="flex items-center gap-2 mb-2">
+                    <Clock className="w-4 h-4 text-green-500" /> Start Date
+                  </Label>
+                  <TextInput
+                    id="start"
+                    type="date"
+                    value={newEvent.start.split('T')[0]}
+                    onChange={(e) => setNewEvent({...newEvent, start: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="end" className="flex items-center gap-2 mb-2">
+                    <Clock className="w-4 h-4 text-green-500" /> End Date (Optional)
+                  </Label>
+                  <TextInput
+                    id="end"
+                    type="date"
+                    value={newEvent.end ? newEvent.end.split('T')[0] : ''}
+                    onChange={(e) => setNewEvent({...newEvent, end: e.target.value || undefined})}
+                  />
+                </div>
               </div>
-              <Select
-                id="status"
-                value={newEvent.status}
-                onChange={(e) => setNewEvent({...newEvent, status: e.target.value as 'planned' | 'booked'})}
-                required
+              
+              <div>
+                <Label htmlFor="status" className="flex items-center gap-2 mb-2">
+                  <CheckCircle2 className="w-4 h-4 text-blue-500" /> Status
+                </Label>
+                <Select
+                  id="status"
+                  value={newEvent.status}
+                  onChange={(e) => setNewEvent({...newEvent, status: e.target.value as 'PLANNED' | 'BOOKED'})}
+                  required
+                >
+                  <option value="PLANNED">Planned</option>
+                  <option value="BOOKED">Booked</option>
+                </Select>
+              </div>
+            </motion.div>
+          </Modal.Body>
+          <Modal.Footer className="bg-white/95">
+            <Button 
+              color="gray" 
+              onClick={() => setOpenModal(false)}
+              className="mr-2"
+            >
+              Cancel
+            </Button>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button 
+                color="success" 
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="flex items-center gap-2"
               >
-                <option value="planned">Planned</option>
-                <option value="booked">Booked</option>
-              </Select>
-            </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button color="gray" onClick={() => setOpenModal(false)}>
-            Cancel
-          </Button>
-          <Button color="success" onClick={handleSubmit}>
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+                {isSubmitting ? (
+                  <span className="animate-pulse">Saving...</span>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-5 h-5" />
+                    Save Event
+                  </>
+                )}
+              </Button>
+            </motion.div>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    </motion.div>
   );
 };
 

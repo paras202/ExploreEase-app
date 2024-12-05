@@ -152,3 +152,21 @@ model TicketBooking {
   @@index([UserId])
   @@index([email])
 }
+
+model TravelEvent {
+  id            String   @id @default(cuid())
+  userId        String
+  title         String
+  start         DateTime
+  end           DateTime?
+  description   String?
+  status        EventStatus @default(PLANNED)
+  backgroundColor String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum EventStatus {
+  PLANNED
+  BOOKED
+}

@@ -1,10 +1,13 @@
-import React from 'react'
-import TourismCalendar from '../ui/scheduler/Events'
+import { auth } from '@clerk/nextjs/server';
+import TourismCalendar from '@/app/ui/scheduler/Events';
+import { redirect } from 'next/navigation';
 
-const page = () => {
-  return (
-    <div><TourismCalendar/></div>
-  )
+export default async function SchedulerPage() {
+  const { userId } = auth();
+  
+  if (!userId) {
+    redirect('/sign-in');
+  }
+  
+  return <TourismCalendar userId={userId} />;
 }
-
-export default page

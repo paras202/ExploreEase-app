@@ -1,6 +1,8 @@
 'use server'
 import { db } from './db'
 import { PaymentMethod, IdProofType } from '@prisma/client'
+import { revalidatePath } from 'next/cache';
+
 export async function createBooking(formData: FormData) {
   try {
     // Extract data from formData
@@ -17,6 +19,7 @@ export async function createBooking(formData: FormData) {
     const idProofType = formData.get('idProofType') as IdProofType
     const idProofNumber = formData.get('idProofNumber') as string
     const paymentMethod = (formData.get('paymentMethod') || 'PENDING') as PaymentMethod
+    const bookingDate = formData.get('bookingDate') as string || new Date().toISOString()
     // Generate unique booking reference
     const bookingReference = `BK-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
     // Perform mock payment validation
@@ -41,9 +44,22 @@ export async function createBooking(formData: FormData) {
         idProofType,
         idProofNumber,
         bookingReference,
+        bookingDate: new Date(bookingDate),
         paymentMethod: paymentValidation.success ? paymentMethod : PaymentMethod.PENDING
       }
     })
+
+       // Automatically create a travel event
+       const travelEvent = await db.travelEvent.create({
+        data: {
+          title: `Trip to ${placeName}`,
+          description: `Booking for ${numberOfTickets} ticket(s) to ${placeName}`,
+          start: new Date(bookingDate),
+          status: 'BOOKED',
+          userId: userId,
+          backgroundColor: '#22c55e'
+        }
+      });
     // Construct redirect URL with booking details
     const redirectUrl = `/booking-confirmation?` + 
       `bookingId=${booking.id}` +
@@ -52,12 +68,14 @@ export async function createBooking(formData: FormData) {
       `&placeName=${encodeURIComponent(placeName)}` +
       `&placeLocation=${encodeURIComponent(placeLocation)}` +
       `&tickets=${numberOfTickets}` +
-      `&totalAmount=${totalAmount}`
+      `&totalAmount=${totalAmount}` +
+      `&bookingDate=${encodeURIComponent(bookingDate)}`
     return { 
       success: true, 
       bookingId: booking.id,
       bookingReference,
-      redirectUrl
+      redirectUrl,
+      travelEventId: travelEvent.id
     }
   } catch (error) {
     console.error('Booking creation error:', error)
@@ -111,5 +129,93 @@ async function mockPaymentProcessing(
         success: false, 
         message: 'Invalid Payment Method' 
       }
+  }
+}
+
+// Create a new travel event
+export async function createTravelEvent(eventData: {
+  title: string;
+  description?: string;
+  start: string;
+  end?: string;
+  status: 'PLANNED' | 'BOOKED';
+  userId: string;
+}) {
+  try {
+    const event = await db.travelEvent.create({
+      data: {
+        title: eventData.title,
+        description: eventData.description,
+        start: new Date(eventData.start),
+        end: eventData.end ? new Date(eventData.end) : null,
+        status: eventData.status,
+        userId: eventData.userId,
+        backgroundColor: eventData.status === 'BOOKED' ? '#22c55e' : '#f97316'
+      }
+    });
+
+    revalidatePath('/travel-planner');
+    return event;
+  } catch (error) {
+    console.error('Error creating travel event:', error);
+    throw error;
+  }
+}
+
+// Get travel events for a specific user
+export async function getTravelEvents(userId: string) {
+  try {
+    return await db.travelEvent.findMany({
+      where: { userId },
+      orderBy: { start: 'asc' }
+    });
+  } catch (error) {
+    console.error('Error fetching travel events:', error);
+    return [];
+  }
+}
+
+// Update a travel event
+export async function updateTravelEvent(eventId: string, eventData: {
+  title?: string;
+  description?: string;
+  start?: string;
+  end?: string;
+  status?: 'PLANNED' | 'BOOKED';
+}) {
+  try {
+    const updatedEvent = await db.travelEvent.update({
+      where: { id: eventId },
+      data: {
+        ...(eventData.title && { title: eventData.title }),
+        ...(eventData.description && { description: eventData.description }),
+        ...(eventData.start && { start: new Date(eventData.start) }),
+        ...(eventData.end && { end: new Date(eventData.end) }),
+        ...(eventData.status && { 
+          status: eventData.status,
+          backgroundColor: eventData.status === 'BOOKED' ? '#22c55e' : '#f97316'
+        })
+      }
+    });
+
+    revalidatePath('/travel-planner');
+    return updatedEvent;
+  } catch (error) {
+    console.error('Error updating travel event:', error);
+    throw error;
+  }
+}
+
+// Delete a travel event
+export async function deleteTravelEvent(eventId: string) {
+  try {
+    await db.travelEvent.delete({
+      where: { id: eventId }
+    });
+
+    revalidatePath('/travel-planner');
+  } catch (error) {
+    console.error('Error deleting travel event:', error);
+    throw error;
   }
 }
