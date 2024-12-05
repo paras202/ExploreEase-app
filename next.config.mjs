@@ -5,16 +5,40 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'media-cdn.tripadvisor.com', // Replace the domain entry with a remote pattern
+        hostname: 'media-cdn.tripadvisor.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: '**.clerk.com', // Add Clerk domain configuration here
+        hostname: '**.clerk.com',
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'static.tacdn.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dynamic-media-cdn.tripadvisor.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'a.travel-assets.com',
+        port: '',
+        pathname: '/**',
+      }
     ],
   },
 };

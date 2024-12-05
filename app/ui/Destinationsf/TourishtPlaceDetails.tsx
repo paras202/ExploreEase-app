@@ -1,12 +1,17 @@
 "use client"
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import axios from 'axios';
 import Map from '../Map';
 import Link from 'next/link';
 // import BookingModal from '../TouristBookingModel';
-import { Button } from 'flowbite-react'
+import { Modal, Button, Label, TextInput, Select, Spinner } from 'flowbite-react';
 import TouristPlaceComments from '@/app/ui/Destinationsf/TouristPlaceComments';
+import { createBooking } from '@/app/lib/action';
+import { useUser } from '@clerk/nextjs';
+import { toast, Toaster } from 'sonner';
+import { PaymentMethod } from '@prisma/client';
 
 interface TouristPlace {
   id: number;
@@ -20,13 +25,14 @@ interface TouristPlace {
   ranking: string;
   image: string;
   website: string;
+  isBlessed?: boolean;
 }
 
 const API_URL = 'https://travel-advisor.p.rapidapi.com/attractions/get-details';
 const options = (id: string) => ({
   params: { location_id: id },
   headers: {
-    'x-rapidapi-key': 'c95d6d5ad4msh1e6bd14a1839407p166751jsne4fccb50d62b',
+    'x-rapidapi-key': '9b98074ad0msh1405a5056224606p179747jsn2f1674b5f1f1',
     'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
   }
 });
@@ -38,14 +44,34 @@ interface Props {
 const TouristPlaceDetails = ({ id }: Props) => {
   const [place, setPlace] = useState<TouristPlace | null>(null);
   const [loading, setLoading] = useState(true);
+  const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [tickets, setTickets] = useState(1);
+  const [ticketPrice, setTicketPrice] = useState(500);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('UPI');
+  const [bookingDate, setBookingDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
+  const router = useRouter();
+  const { user } = useUser();
+
+  const generateTicketPrice = (isBlessed?: boolean) => {
+    if (isBlessed) {
+      return 0;
+    }
+    // Generate random price between 500 and 5000, multiple of 5
+    const prices = Array.from({ length: 91 }, (_, i) => 500 + i * 5);
+    return prices[Math.floor(Math.random() * prices.length)];
+  };
   useEffect(() => {
     if (id) {
       const fetchPlaceDetails = async () => {
         try {
           const { data } = await axios.get(API_URL, options(id));
-          setPlace({
+          
+          const isBlessed = data.photo?.is_blessed || false;
+          
+          const placeDetails: TouristPlace = {
             id: data.location_id,
             name: data.name,
             latitude: parseFloat(data.latitude),
@@ -56,21 +82,90 @@ const TouristPlaceDetails = ({ id }: Props) => {
             num_reviews: data.num_reviews || 'N/A',
             ranking: data.ranking || 'N/A',
             image: data.photo?.images.large.url || '',
-            website: data.website || '#'
-          });
+            website: data.website || '#',
+            isBlessed: isBlessed
+          };
+  
+          setPlace(placeDetails);
+          
+          // Set ticket price based on blessed status
+          setTicketPrice(generateTicketPrice(isBlessed));
+          
           setLoading(false);
         } catch (err) {
           setError('Failed to fetch tourist place details');
           setLoading(false);
         }
       };
+      
       fetchPlaceDetails();
     }
   }, [id]);
 
-  if (loading) return <p className="text-center py-4">Loading...</p>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <Spinner size="xl" />
+      <span className="ml-2">Loading place details...</span>
+    </div>
+  );
   if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
   if (!place) return <p className="text-center py-4">No data found</p>;
+
+  const handleBookingSubmit = async (formData: FormData) => {
+    // Prevent multiple submissions
+    if (formLoading) return;
+  
+    setFormLoading(true);
+    try {
+      const totalAmount = tickets * ticketPrice;
+      
+      // Append payment method to formData
+        formData.append('paymentMethod', selectedPaymentMethod);
+        formData.append('placeName', place?.name || '');
+        formData.append('placeLocation', place?.address || '');
+        formData.append('latitude', place?.latitude.toString() || '');
+        formData.append('longitude', place?.longitude.toString() || '');
+        formData.append('totalAmount', totalAmount.toString());
+        formData.append('pricePerTicket', ticketPrice.toString());
+        formData.append('numberOfTickets', tickets.toString());
+        formData.append('userId', `${user?.id}` || '');
+        formData.append('userName', `${user?.firstName} ${user?.lastName}` || '');
+        formData.append('userEmail', `${user?.primaryEmailAddress}` || '');
+        formData.append('bookingDate', bookingDate);
+      // Rest of your existing code...
+      const result = await createBooking(formData);
+      
+      if (result.success) {
+        // Redirect to booking confirmation page
+        router.push(result.redirectUrl as string);
+      } else {
+        toast.error('Booking Failed', {
+          description: result.message,
+        });
+      }
+    } catch (error) {
+      toast.error('Booking Error', {
+        description: 'An unexpected error occurred',
+      });
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  <div>
+  <Label htmlFor="paymentMethod">Payment Method</Label>
+  <Select 
+   id="paymentMethod"
+   value={selectedPaymentMethod}
+   onChange={(e) => setSelectedPaymentMethod(e.target.value as PaymentMethod)}
+  >
+    <option value="UPI">UPI</option>
+    <option value="CREDIT_CARD">Credit Card</option>
+    <option value="DEBIT_CARD">Debit Card</option>
+    <option value="NET_BANKING">Net Banking</option>
+    <option value="WALLET">Wallet</option>
+  </Select>
+</div>
 
   return (
     <div className="bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-600 dark:to-blue-700 relative min-h-screen overflow-hidden">
@@ -102,6 +197,11 @@ const TouristPlaceDetails = ({ id }: Props) => {
             />
           </div>
           </Link>
+          {place.isBlessed && (
+                  <span className="ml-2 text-sm text-green-600 bg-green-100 px-2 py-1 rounded">
+                    Blessed Place
+                  </span>
+                )}
           </div>
           <div className='mb-4 animate-slideUp bg-transparent p-4 rounded-lg transition-colors duration-300 hover:bg-white '>
           <h3 className="text-2xl mb-3 font-semibold text-gray-800 animate-fadeIn hover:text-indigo-600 transition-colors duration-300">About</h3>
@@ -151,11 +251,169 @@ const TouristPlaceDetails = ({ id }: Props) => {
               </a>
             </div>
             <div className="flex justify-center mt-8">
-             <Button gradientDuoTone="purpleToBlue">
-                Booking
+            <Button 
+                gradientDuoTone="purpleToBlue"
+                className="mb-6"
+                onClick={() => setShowModal(true)}
+              >
+                Book Now
               </Button>
             </div>
           </div>
+          <Modal show={showModal} onClose={() => setShowModal(false)} size="xl">
+            <Modal.Header>Book Your Visit to {place.name}</Modal.Header>
+            <Modal.Body>
+              <form action={handleBookingSubmit} className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <h3 className="font-semibold mb-3">User Information</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="userName">Full Name</Label>
+                      <TextInput
+                        id="userName"
+                        value={`${user?.firstName} ${user?.lastName}` || ''}
+                        disabled
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="userEmail">Email</Label>
+                      <TextInput
+                        id="userEmail"
+                        value={`${user?.primaryEmailAddress}` || ''}
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <h3 className="font-semibold mb-3">Place Information</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="placeName">Place Name</Label>
+                      <TextInput
+                        id="placeName"
+                        value={place.name}
+                        disabled
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="placeAddress">Address</Label>
+                      <TextInput
+                        id="placeAddress"
+                        value={place.address}
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-lg">
+                  <h3 className="font-semibold mb-3">Booking Details</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="idProofType">ID Proof Type</Label>
+                      <Select id="idProofType" name="idProofType" required>
+                        <option value="DRIVING_LICENSE">Driving License</option>
+                        <option value="AADHAR_CARD">Aadhar Card</option>
+                        <option value="PAN_CARD">PAN Card</option>
+                        <option value="PASSPORT">Passport</option>
+                        <option value="VOTER_ID">Voter ID</option>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="idProofNumber">ID Number</Label>
+                      <TextInput
+                        id="idProofNumber"
+                        name="idProofNumber"
+                        required
+                      />
+                    </div>
+                    <div>
+                        <Label htmlFor="bookingDate">Select Booking Date</Label>
+                        <TextInput
+                          id="bookingDate"
+                          name="bookingDate"
+                          type="date"
+                          min={new Date().toISOString().split('T')[0]} // Prevent past dates
+                          value={bookingDate}
+                          onChange={(e) => setBookingDate(e.target.value)}
+                          required
+                        />
+                      </div>
+
+                    <div>
+                      <Label htmlFor="numberOfTickets">Number of Tickets</Label>
+                      <TextInput
+                        id="numberOfTickets"
+                        name="numberOfTickets"
+                        type="number"
+                        min="1"
+                        value={tickets}
+                        onChange={(e) => setTickets(parseInt(e.target.value))}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                    <Label htmlFor="paymentMethod">Select your Payment Method</Label>
+                    <Select name="paymentMethod" required>
+                    <option value="UPI">UPI</option>
+                    <option value="CREDIT_CARD">Credit Card</option>
+                    <option value="DEBIT_CARD">Debit Card</option>
+                    <option value="NET_BANKING">Net Banking</option>
+                    <option value="WALLET">Wallet</option>
+                    </Select>
+                    </div>
+
+                    <div className={`p-4 rounded-lg ${place.isBlessed ? 'bg-green-50' : 'bg-indigo-50'}`}>
+                      {place.isBlessed ? (
+                        <div>
+                          <p className="text-lg font-semibold text-green-700">
+                            This is a Blessed Place - Free Entry!
+                          </p>
+                          <p className="text-xl font-bold text-green-900">
+                            Total Amount: $0
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-lg font-semibold text-indigo-700">
+                            Price per ticket: ${ticketPrice}
+                          </p>
+                          <p className="text-xl font-bold text-indigo-900">
+                            Total Amount: ${tickets * ticketPrice}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex justify-end space-x-2">
+                  <Button color="gray" onClick={() => setShowModal(false)} disabled={formLoading}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    gradientDuoTone="purpleToBlue" 
+                    disabled={formLoading}
+                  >
+                    {formLoading ? (
+                      <>
+                        <Spinner size="sm" className="mr-2" />
+                        Processing...
+                      </>
+                    ) : (
+                      'Confirm Booking'
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </Modal.Body>
+          </Modal>
+          <Toaster richColors />
         </div>
         <TouristPlaceComments placeId={id.toString()}/>
       </div>

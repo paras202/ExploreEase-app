@@ -7,7 +7,7 @@ import { CiSearch } from "react-icons/ci";
 import axios from 'axios';
 import Destination from './Destination';
 import { useTouristPlaces } from './TouristPlaceContent';
-import Destinations from './Destinations';
+import WeatherComponent from './Weather';
 
 // Dynamically import the Map component with SSR disabled
 const DynamicMap = dynamic(() => import('./Map'), {
@@ -15,11 +15,12 @@ const DynamicMap = dynamic(() => import('./Map'), {
   loading: () => <p>Loading map...</p>
 });
 
-const API_KEY = 'c95d6d5ad4msh1e6bd14a1839407p166751jsne4fccb50d62b';
+const API_KEY = '9b98074ad0msh1405a5056224606p179747jsn2f1674b5f1f1';
 
 export default function Homepage() {
   const { places, setPlaces, initialPlacesFetched, setInitialPlacesFetched } = useTouristPlaces();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('New Delhi');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -79,6 +80,7 @@ export default function Homepage() {
     setShowAllResults(false);
 
     try {
+      setSelectedLocation(searchQuery);
       const response = await axios.get('https://travel-advisor.p.rapidapi.com/locations/search', {
         params: { query: searchQuery, limit: '50' },
         headers: {
@@ -210,6 +212,14 @@ export default function Homepage() {
           </div>
         </div>
       </section>
+      
+      {/* Weather Section */}
+      <section className="py-16 px-4 md:px-16 max-w-4/5 mx-auto bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800 relative z-20">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <WeatherComponent location={selectedLocation} />
+        </div>
+      </section>
+               
 
       {/* Featured Destinations */}
       <section className="py-16 bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-700 dark:to-blue-800 relative z-20">
@@ -223,6 +233,7 @@ export default function Homepage() {
               Explore More Destinations
             </Link>
           </div>
+         
         </div>
       </section>
                

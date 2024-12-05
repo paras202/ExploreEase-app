@@ -87,7 +87,7 @@ export default function Navbar() {
                       />
                     </>
                   ) : (
-                    <span className="hidden md:inline text-gray-600 dark:text-gray-300">
+                    <span className="hidden md:p-2 md:inline text-gray-600 dark:text-gray-300">
                       Get Location
                     </span>
                   )}

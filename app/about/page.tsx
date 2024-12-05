@@ -118,9 +118,8 @@ const AboutPage: React.FC = () => {
               { title: "Interactive Mapping", description: "Powered by Google Maps API for dynamic, location-based insights" },
               { title: "Online Ticketing System", description: "Book tickets for attractions with secure payment integrations" },
               { title: "User-Centric Design", description: "Seamless experience across devices with responsive design" },
-              { title: "Personalized Recommendations", description: "Tailored travel suggestions based on user preferences" },
               { title: "Tourist Information Pages", description: "Detailed pages with descriptions, images, and user reviews" },
-              { title: "Advanced Search & Filter", description: "Find destinations based on categories, price range, and popularity" }
+              { title: "Navigation to the destination from your location ", description: "Find destinations and navigate its path from your location" },
             ].map((feature, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
                 <h3 className="text-xl font-semibold mb-2 text-indigo-600">{feature.title}</h3>

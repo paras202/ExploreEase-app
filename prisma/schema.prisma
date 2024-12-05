@@ -36,17 +36,6 @@ model Place {
   city        City    @relation(fields: [cityId], references: [id])
 }
 
-model Ticket {
-  id         String   @id @default(uuid())
-  ticketCode String   @unique @map("ticket_code")
-  userId     String   @map("user_id")
-  placeName  String   @map("place_name")
-  quantity   Int
-  email      String
-  price      Float
-  isUsed     Boolean  @default(false) @map("is_used")
-  createdAt  DateTime @default(now()) @map("created_at")
-}
 
 model WishlistItem {
   id        Int      @id @default(autoincrement())
@@ -89,6 +78,7 @@ model Comment {
   replies   Reply[]
 
   @@index([placeId])
+  @@index([userId])
 }
 
 model Like {
@@ -111,4 +101,54 @@ model Reply {
   
   comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String
+
+  @@index([commentId])
+  @@index([userId])
+}
+
+
+enum IdProofType {
+  DRIVING_LICENSE
+  AADHAR_CARD
+  PAN_CARD
+  PASSPORT
+  VOTER_ID
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  UPI
+  NET_BANKING
+  WALLET
+  PENDING
+}
+model TicketBooking {
+  id              String        @id @default(cuid())
+  UserId     String        // Store Clerk's user ID
+  userName        String
+  email           String
+  idProofType     IdProofType
+  idProofNumber   String
+  
+  // Tourist Place Details
+  placeName       String
+  placeLocation   String
+  latitude        Float
+  longitude       Float
+  bookingReference String
+  
+  // Booking Details
+  bookingDate     DateTime      @default(now())
+  numberOfTickets Int
+  pricePerTicket  Float
+  totalAmount     Float         @default(0)
+  paymentMethod   PaymentMethod
+  
+  // Status and Timestamps
+ 
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  @@index([UserId])
+  @@index([email])
 }

@@ -161,7 +161,7 @@ const TouristPlaceComments = ({ placeId }: Props) => {
 
   return (
     <div className="w-11/12 mx-auto mt-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105">
-    <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Comments</h3>
+    <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Reviews</h3>
     
     {/* Comment Input */}
     <form onSubmit={handleAddComment} className="mb-6 flex animate-slideUp">
