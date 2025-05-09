@@ -3,10 +3,11 @@
 import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useClerk } from '@clerk/nextjs';
-import { FaUser, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaCog, FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
 import { UserResource } from '@clerk/types';
 import { useRouter } from 'next/navigation';
-
+import { useTheme } from 'next-themes';
+import { Button } from 'flowbite-react';
 interface SidebarProps {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
@@ -17,7 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar, user })
   const { openUserProfile, signOut } = useClerk();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-
+  const { theme, setTheme } = useTheme();
   // Close sidebar when clicking outside of it
   // useEffect(() => {
   //   const handleClickOutside = (event: MouseEvent) => {
@@ -71,6 +72,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar, user })
               className="rounded-full"
             />
             <span className="font-semibold text-gray-800 dark:text-white">{user?.username || 'Guest'}</span>
+            <Button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="w-10 gap-1 md:w-12 md:h-10 sm:inline"
+            color="gray"
+          >
+            {theme === "dark" ? <FaSun className="md:text-xl" /> : <FaMoon className="md:text-xl text-purple-600" />}
+          </Button>
           </div>
           <ul className="space-y-2">
             <li>
@@ -86,12 +94,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar, user })
               </button>
             </li>
             <li>
+              <button onClick={() => handleNavigation('/scheduler')} className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <FaUser className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                <span className="ml-3">Scheduler</span>
+              </button>
+            </li>
+            <li>
               <button onClick={handleSignOut} className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <FaSignOutAlt className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="ml-3">Sign Out</span>
               </button>
             </li>
           </ul>
+          
         </div>
       </div>
     </>

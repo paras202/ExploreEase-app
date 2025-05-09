@@ -13,7 +13,7 @@ const MobileNavbar = () => {
         </Link>
 
         {/* Search Icon */}
-        <Link href="/search" className="flex flex-col items-center">
+        <Link href="/#searchBar" className="flex flex-col items-center">
           <FaSearch className="text-xl text-purple-600 dark:text-white" />
           <span className="text-xs text-gray-600 dark:text-gray-400">Search</span>
         </Link>
@@ -31,7 +31,7 @@ const MobileNavbar = () => {
         </Link>
 
         {/* Settings Icon */}
-        <Link href="/settings" className="flex flex-col items-center">
+        <Link href="/dashboard/#Settings" className="flex flex-col items-center">
           <FaCog className="text-xl text-purple-600 dark:text-white" />
           <span className="text-xs text-gray-600 dark:text-gray-400">Settings</span>
         </Link>

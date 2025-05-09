@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model City {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  country     String
+  latitude    Float
+  longitude   Float
+  description String
+  image       String
+  places      Place[]
+}
+
+model Place {
+  id          Int     @id @default(autoincrement())
+  name        String
+  latitude    Float
+  longitude   Float
+  description String
+  image       String
+  cityId      Int
+  city        City    @relation(fields: [cityId], references: [id])
+}
+
+
+model WishlistItem {
+  id        Int      @id @default(autoincrement())
+  title     String
+  price     Float
+  image     String
+  addedDate DateTime @default(now())
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Activity {
+  id        Int      @id @default(autoincrement())
+  type      String
+  description String
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Foreign key to link comment to a specific tourist place
+  placeId   String
+  
+  // User details from Clerk
+  userId    String
+  userName  String?
+  userImage String?
+
+  // Interactions
+  likes     Like[]
+  replies   Reply[]
+
+  @@index([placeId])
+  @@index([userId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+  
+  @@unique([userId, commentId])
+}
+
+model Reply {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  userName  String?
+  userImage String?
+  
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+
+  @@index([commentId])
+  @@index([userId])
+}
+
+
+enum IdProofType {
+  DRIVING_LICENSE
+  AADHAR_CARD
+  PAN_CARD
+  PASSPORT
+  VOTER_ID
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  UPI
+  NET_BANKING
+  WALLET
+  PENDING
+}
+model TicketBooking {
+  id              String        @id @default(cuid())
+  UserId     String        // Store Clerk's user ID
+  userName        String
+  email           String
+  idProofType     IdProofType
+  idProofNumber   String
+  
+  // Tourist Place Details
+  placeName       String
+  placeLocation   String
+  latitude        Float
+  longitude       Float
+  bookingReference String
+  
+  // Booking Details
+  bookingDate     DateTime      @default(now())
+  numberOfTickets Int
+  pricePerTicket  Float
+  totalAmount     Float         @default(0)
+  paymentMethod   PaymentMethod
+  
+  // Status and Timestamps
+ 
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  @@index([UserId])
+  @@index([email])
+}
+
+model TravelEvent {
+  id            String   @id @default(cuid())
+  userId        String
+  title         String
+  start         DateTime
+  end           DateTime?
+  description   String?
+  status        EventStatus @default(PLANNED)
+  backgroundColor String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum EventStatus {
+  PLANNED
+  BOOKED
+}

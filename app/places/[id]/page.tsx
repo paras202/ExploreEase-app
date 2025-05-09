@@ -1,4 +1,4 @@
-import TouristPlaceDetails from "@/app/ui/TouristPlaceDetails";
+import TouristPlaceDetails from "@/app/ui/Destinationsf/TourishtPlaceDetails";
 
 // The `params` object contains dynamic route parameters
 export default function Page({ params }: { params: { id: string } }) {
@@ -10,4 +10,5 @@ export default function Page({ params }: { params: { id: string } }) {
       <TouristPlaceDetails id={id} />
     </div>
   );
+
 }

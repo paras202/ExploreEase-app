@@ -16,7 +16,7 @@ const options = (page: number) => ({
     offset: (page - 1) * 10
   },
   headers: {
-    'x-rapidapi-key': '9e73649d8emsha08d129c09456f7p143b76jsnfe4090fc2a73',
+    'x-rapidapi-key': '9b98074ad0msh1405a5056224606p179747jsn2f1674b5f1f1',
     'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
   }
 });
@@ -124,7 +124,7 @@ const Destination: React.FC = () => {
       </div>
 
       <div className="mt-4 text-sm text-gray-600">
-        Discover the beauty of the world's top tourist attractions.
+        Discover the beauty of the worlds top tourist attractions.
       </div>
     </div>
   );

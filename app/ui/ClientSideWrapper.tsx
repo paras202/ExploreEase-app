@@ -7,6 +7,7 @@ import Navbar from "@/app/ui/Navbar";
 import Footer from "@/app/ui/Footer";
 import SidebarWrapper from "@/app/ui/SidebarWrapper";
 import MobileNavbar from "@/app/ui/MobileNavbar";
+import ExploreBotComponent from './ExploreBot';
 
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -28,7 +29,9 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
       <SignedIn>
         <Navbar />
         <SidebarWrapper />
-        <main>{children}</main>
+        <main>{children}
+          <ExploreBotComponent/>
+        </main>
         <Footer />
         <MobileNavbar />
       </SignedIn>
